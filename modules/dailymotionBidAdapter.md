@@ -39,6 +39,9 @@ config.setConfig({
     }
   });
 ```
+Please note that failing to set these configuration options will result in the adapter not bidding at all.
+
+# Sample video AdUnit
 ```
  var adUnits = [
   {
@@ -55,10 +58,11 @@ config.setConfig({
         }]
       }];
 ```
-Please note that failing to set these configuration options will result in the adapter not bidding at all.
 
 # Integrating the adapter
 
-To use the adapter with any non-test request, you first need to ask an API key from Dailymotion.
+To use the adapter with any non-test request, you first need to ask an API key from Dailymotion. Please contact on **ad-leo-engineering@dailymotion.com**.
+
+Use this api_key for setting config before making a bid request.
 
 This API key will ensure proper identification of your inventory and allow you to get real bids.
