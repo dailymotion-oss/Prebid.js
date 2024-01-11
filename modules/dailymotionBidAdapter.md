@@ -45,7 +45,7 @@ Please note that failing to set these configuration options will result in the a
 ```
  var adUnits = [
   {
-     code: 'midroll',
+     code: 'test-ad-unit',
      mediaTypes: {
           video: {
             context: 'instream',
