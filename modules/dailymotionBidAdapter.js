@@ -15,44 +15,32 @@ export const spec = {
    * @param {object} bid The bid to validate.
    * @return boolean True if this is a valid bid, and false otherwise.
    */
-  isBidRequestValid: function (bid) {
+  isBidRequestValid: () => {
     const dmConfig = config.getConfig('dailymotion');
-    if (!dmConfig?.api_key) {
-      return false;
-    }
-    if (!dmConfig?.position) {
-      return false;
-    }
-    return true;
+    return !!(dmConfig?.api_key && dmConfig?.position);
   },
 
   /**
    * Make a server request from the list of valid BidRequests (that already passed the isBidRequestValid call)
    *
    * @param {BidRequest[]} validBidRequests A non-empty list of valid bid requests that should be sent to the Server.
+   * @param {BidderRequest} bidderRequest
    * @return ServerRequest Info describing the request to the server.
    */
-  buildRequests: function (validBidRequests, bidderRequest) {
-    const requests = validBidRequests.map(function (bid) {
-      const dmConfig = config.getConfig('dailymotion');
-      return {
-        method: 'POST',
-        url: 'https://pb.dmxleo.com',
-        data: {
-          bidder_request: bidderRequest,
-          config: dmConfig,
-          coppa: config.getConfig('coppa'),
-          request: bid,
-        },
-        options: {
-          withCredentials: true,
-          crossOrigin: true
-        },
-      }
-    });
-
-    return requests;
-  },
+  buildRequests: (validBidRequests, bidderRequest) => validBidRequests.map(bid => ({
+    method: 'POST',
+    url: 'https://pb.dmxleo.com',
+    data: {
+      bidder_request: bidderRequest,
+      config: config.getConfig('dailymotion'),
+      coppa: config.getConfig('coppa'),
+      request: bid,
+    },
+    options: {
+      withCredentials: true,
+      crossOrigin: true
+    },
+  })),
 
   /**
    * Map the response from the server into a list of bids.
@@ -60,16 +48,10 @@ export const spec = {
    * we directly include it as the only bid in the response.
    *
    * @param {*} serverResponse A successful response from the server.
+   * @param {BidRequest} bidRequest
    * @return {Bid[]} An array of bids which were nested inside the server.
    */
-  interpretResponse: function (serverResponse, bidRequest) {
-    if (!serverResponse || !serverResponse.body) {
-      return [];
-    }
-
-    // all the response formatting is handled by Prebid backend Service
-    return [serverResponse.body];
-  }
+  interpretResponse: serverResponse => serverResponse?.body ? [serverResponse.body] : [],
 };
 
 registerBidder(spec);

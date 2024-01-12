@@ -1,8 +1,8 @@
 # Overview
 
 ```
-Module Name:  Dailymotion Bid Adapter
-Module Type:  Bidder Adapter
+Module Name: Dailymotion Bid Adapter
+Module Type: Bidder Adapter
 Maintainer: ad-leo-engineering@dailymotion.com
 ```
 
@@ -45,24 +45,25 @@ Please note that failing to set these configuration options will result in the a
 ```
  var adUnits = [
   {
-     code: 'test-ad-unit',
-     mediaTypes: {
-          video: {
-            context: 'instream',
-            playerSize: [640, 480],
-          },
-        },
-        bids: [{
-          bidder: "dailymotion",
-          params: {}
-        }]
-      }];
+    code: 'test-ad-unit',
+    mediaTypes: {
+      video: {
+        context: 'instream',
+        playerSize: [640, 480],
+      },
+    },
+    bids: [{
+      bidder: "dailymotion",
+      params: {}
+    }]
+  }
+];
 ```
 
 # Integrating the adapter
 
 To use the adapter with any non-test request, you first need to ask an API key from Dailymotion. Please contact on **ad-leo-engineering@dailymotion.com**.
 
-Use this api_key for setting config before making a bid request.
+You will then be able to use it within the `config` before making a bid request.
 
 This API key will ensure proper identification of your inventory and allow you to get real bids.
