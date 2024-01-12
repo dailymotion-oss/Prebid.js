@@ -15,12 +15,12 @@ Dailymotion prebid adapter.
 Before calling this adapter, you need to set its configuration with a call to setConfig like this:
 ```
 config.setConfig({
-    dailymotion: {
-      api_key: 'test_api_key',
-      position: 'test_position',
-      xid: 'x123456'
-    }
-  });
+  dailymotion: {
+    api_key: 'test_api_key',
+    position: 'test_position',
+    xid: 'x123456'
+  }
+});
 ```
 
 This call must be made before each auction. Here's a description of each parameter:
@@ -33,11 +33,11 @@ This call must be made before each auction. Here's a description of each paramet
 By setting the following configuration options, you'll get a constant response to any request to validate your adapter integration:
 ```
 config.setConfig({
-    dailymotion: {
-      api_key: 'dailymotion-testing',
-      position: 'preroll'
-    }
-  });
+  dailymotion: {
+    api_key: 'dailymotion-testing',
+    position: 'preroll'
+  }
+});
 ```
 Please note that failing to set these configuration options will result in the adapter not bidding at all.
 
