@@ -47,7 +47,7 @@ Please note that failing to set these configuration options will result in the a
 # Sample video AdUnit
 
 ```
- var adUnits = [
+const adUnits = [
   {
     code: 'test-ad-unit',
     mediaTypes: {
