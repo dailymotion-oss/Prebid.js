@@ -13,6 +13,7 @@ Dailymotion prebid adapter.
 # Configuration options
 
 Before calling this adapter, you need to set its configuration with a call to setConfig like this:
+
 ```
 config.setConfig({
   dailymotion: {
@@ -31,6 +32,7 @@ This call must be made before each auction. Here's a description of each paramet
 # Test Parameters
 
 By setting the following configuration options, you'll get a constant response to any request to validate your adapter integration:
+
 ```
 config.setConfig({
   dailymotion: {
@@ -39,9 +41,11 @@ config.setConfig({
   }
 });
 ```
+
 Please note that failing to set these configuration options will result in the adapter not bidding at all.
 
 # Sample video AdUnit
+
 ```
  var adUnits = [
   {
