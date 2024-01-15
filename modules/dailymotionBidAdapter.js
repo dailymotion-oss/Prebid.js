@@ -12,7 +12,6 @@ export const spec = {
    * The only mandatory parameters for a bid to be valid are the api_key and position configuration entries.
    * Other parameters are optional.
    *
-   * @param {object} bid The bid to validate.
    * @return boolean True if this is a valid bid, and false otherwise.
    */
   isBidRequestValid: () => {
@@ -27,7 +26,7 @@ export const spec = {
    * @param {BidderRequest} bidderRequest
    * @return ServerRequest Info describing the request to the server.
    */
-  buildRequests: (validBidRequests, bidderRequest) => validBidRequests.map(bid => ({
+  buildRequests: (validBidRequests, bidderRequest) => (validBidRequests || []).map(bid => ({
     method: 'POST',
     url: 'https://pb.dmxleo.com',
     data: {
