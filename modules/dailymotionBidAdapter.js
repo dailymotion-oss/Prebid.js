@@ -50,6 +50,7 @@ export const spec = {
         mediaTypes: {
           video: {
             playerSize: bid.mediaTypes?.[VIDEO]?.playerSize || [],
+            api: bid.mediaTypes?.[VIDEO]?.api || [],
           },
         },
         sizes: bid.sizes || [],

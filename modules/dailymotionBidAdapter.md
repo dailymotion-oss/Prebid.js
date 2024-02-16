@@ -55,6 +55,7 @@ const adUnits = [
       video: {
         context: 'instream',
         playerSize: [1280, 720],
+        api: [2,7],
       },
     },
     bids: [{

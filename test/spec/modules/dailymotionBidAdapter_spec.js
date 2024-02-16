@@ -43,6 +43,7 @@ describe('dailymotionBidAdapterTests', () => {
       mediaTypes: {
         video: {
           playerSize: [[1280, 720]],
+          api: [[2, 7]],
         },
       },
       sizes: [[1920, 1080]],
@@ -88,6 +89,7 @@ describe('dailymotionBidAdapterTests', () => {
       mediaTypes: {
         video: {
           playerSize: [[1280, 720]],
+          api: [[2, 7]],
         },
       },
       sizes: [[1920, 1080]],
@@ -159,6 +161,7 @@ describe('dailymotionBidAdapterTests', () => {
       mediaTypes: {
         video: {
           playerSize: [],
+          api: [],
         },
       },
       sizes: [],
