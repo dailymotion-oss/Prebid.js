@@ -10,7 +10,7 @@ describe('dailymotionBidAdapterTests', () => {
     iabcat2: 'test_cat',
     id: '54321',
     lang: 'FR',
-    private: 'false',
+    private: false,
     tags: 'tag_1,tag_2,tag_3',
     title: 'test video',
     topics: 'topic_1, topic_2',
@@ -56,16 +56,18 @@ describe('dailymotionBidAdapterTests', () => {
           playerSize: [[1280, 720]],
           api: [2, 7],
           description: 'this is a test video',
-          duration: 556,
+          duration: 300,
           iabcat2: 'test_cat',
+          lang: 'ENG',
         },
       },
       sizes: [[1920, 1080]],
       params: {
         video: {
+          duration: 556,
           id: '54321',
           lang: 'FR',
-          private: 'false',
+          private: false,
           tags: 'tag_1,tag_2,tag_3',
           title: 'test video',
           topics: 'topic_1, topic_2',
@@ -92,8 +94,6 @@ describe('dailymotionBidAdapterTests', () => {
 
     expect(reqData.config).to.eql(dmConfig);
     expect(reqData.coppa).to.be.true;
-    // eslint-disable-next-line no-console
-    console.log('abc', reqData.video_metadata);
     expect(reqData.bidder_request).to.eql(bidderRequestData)
     expect(reqData.request.auctionId).to.eql(bidRequestData[0].auctionId);
     expect(reqData.request.bidId).to.eql(bidRequestData[0].bidId);
@@ -120,16 +120,17 @@ describe('dailymotionBidAdapterTests', () => {
           playerSize: [[1280, 720]],
           api: [2, 7],
           description: 'this is a test video',
-          duration: 556,
+          duration: 300,
           iabcat2: 'test_cat',
         },
       },
       sizes: [[1920, 1080]],
       params: {
         video: {
+          duration: 556,
           id: '54321',
           lang: 'FR',
-          private: 'false',
+          private: false,
           tags: 'tag_1,tag_2,tag_3',
           title: 'test video',
           topics: 'topic_1, topic_2',

@@ -56,15 +56,48 @@ const adUnits = [
         context: 'instream',
         playerSize: [1280, 720],
         api: [2,7],
+        description: 'this is a video description',
+        duration: 556,
+        iabcat2: 'test_cat',
+        id: '54321',
+        lang: 'FR',
+        private: false,
+        tags: 'tag_1,tag_2,tag_3',
+        title: 'test video',
+        topics: 'topic_1, topic_2',
       },
     },
     bids: [{
       bidder: "dailymotion",
-      params: {}
+      params: {
+        video: {
+          description: 'this is a test video description',
+          duration: 330,
+          iabcat2: 'test_cat',
+          id: '54321',
+          lang: 'FR',
+          private: false,
+          tags: 'tag_1,tag_2,tag_3',
+          title: 'test video',
+          topics: 'topic_1, topic_2, topic_3',
+        }
+      }
     }]
   }
 ];
 ```
+
+Following video metadata fields can be added in mediaTypes.video or bids.params.video. If a field exists in both places, it will be overridden by bids.params.video.
+
+* `description` - Video description
+* `duration` - Video duration in seconds
+* `iabcat2` - Video IAB category
+* `id` - Video unique ID in host video infrastructure
+* `lang` - Main language used in the video
+* `private` - True if video is not publicly available
+* `tags` - Tags for the video, comma separated
+* `title` - Video title
+* `topics` - Main topics for the video, comma separated
 
 # Integrating the adapter
 
