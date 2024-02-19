@@ -1,6 +1,7 @@
 import { config } from '../src/config.js';
 import { registerBidder } from '../src/adapters/bidderFactory.js';
 import { VIDEO } from '../src/mediaTypes.js';
+import {deepAccess} from '../src/utils.js';
 
 export const spec = {
   code: 'dailymotion',
@@ -55,6 +56,7 @@ export const spec = {
         },
         sizes: bid.sizes || [],
       },
+      video_metadata: getVideoMetadata(bid),
     },
     options: {
       withCredentials: true,
@@ -72,5 +74,29 @@ export const spec = {
    */
   interpretResponse: serverResponse => serverResponse?.body ? [serverResponse.body] : [],
 };
+
+function getVideoMetadata(bidRequest) {
+  const videoAdUnit = deepAccess(bidRequest, 'mediaTypes.video', {});
+  const videoBidderParams = deepAccess(bidRequest, 'params.video', {});
+
+  const videoParams = {
+    ...videoAdUnit,
+    ...videoBidderParams // Bidder Specific overrides
+  };
+
+  const videoMetadata = {
+    description: videoParams.hasOwnProperty('description') ? videoParams.description : '',
+    duration: videoParams.hasOwnProperty('duration') ? videoParams.duration : 0,
+    iabcat2: videoParams.hasOwnProperty('iabcat2') ? videoParams.iabcat2 : '',
+    id: videoParams.hasOwnProperty('id') ? videoParams.id : '',
+    lang: videoParams.hasOwnProperty('lang') ? videoParams.lang : '',
+    private: videoParams.hasOwnProperty('private') ? videoParams.private : false,
+    tags: videoParams.hasOwnProperty('tags') ? videoParams.tags : '',
+    title: videoParams.hasOwnProperty('title') ? videoParams.title : '',
+    topics: videoParams.hasOwnProperty('topics') ? videoParams.topics : '',
+  }
+
+  return videoMetadata
+}
 
 registerBidder(spec);

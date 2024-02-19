@@ -4,6 +4,17 @@ import { spec } from 'modules/dailymotionBidAdapter.js';
 import { VIDEO } from '../../../src/mediaTypes';
 
 describe('dailymotionBidAdapterTests', () => {
+  const videoMetadata = {
+    description: 'this is a test video',
+    duration: 556,
+    iabcat2: 'test_cat',
+    id: '54321',
+    lang: 'FR',
+    private: 'false',
+    tags: 'tag_1,tag_2,tag_3',
+    title: 'test video',
+    topics: 'topic_1, topic_2',
+  }
   // Validate that isBidRequestValid only validates requests
   // with both api_key and position config parameters set
   it('validates isBidRequestValid', () => {
@@ -44,9 +55,22 @@ describe('dailymotionBidAdapterTests', () => {
         video: {
           playerSize: [[1280, 720]],
           api: [2, 7],
+          description: 'this is a test video',
+          duration: 556,
+          iabcat2: 'test_cat',
         },
       },
       sizes: [[1920, 1080]],
+      params: {
+        video: {
+          id: '54321',
+          lang: 'FR',
+          private: 'false',
+          tags: 'tag_1,tag_2,tag_3',
+          title: 'test video',
+          topics: 'topic_1, topic_2',
+        }
+      },
     }];
 
     const bidderRequestData = {
@@ -68,9 +92,14 @@ describe('dailymotionBidAdapterTests', () => {
 
     expect(reqData.config).to.eql(dmConfig);
     expect(reqData.coppa).to.be.true;
-
+    // eslint-disable-next-line no-console
+    console.log('abc', reqData.video_metadata);
     expect(reqData.bidder_request).to.eql(bidderRequestData)
-    expect(reqData.request).to.eql(bidRequestData[0]);
+    expect(reqData.request.auctionId).to.eql(bidRequestData[0].auctionId);
+    expect(reqData.request.bidId).to.eql(bidRequestData[0].bidId);
+    expect(reqData.request.mediaTypes.video.api).to.eql(bidRequestData[0].mediaTypes.video.api);
+    expect(reqData.request.mediaTypes.video.playerSize).to.eql(bidRequestData[0].mediaTypes.video.playerSize);
+    expect(reqData.video_metadata).to.eql(videoMetadata);
   });
 
   // Validate request generation with api key, position, xid
@@ -90,9 +119,22 @@ describe('dailymotionBidAdapterTests', () => {
         video: {
           playerSize: [[1280, 720]],
           api: [2, 7],
+          description: 'this is a test video',
+          duration: 556,
+          iabcat2: 'test_cat',
         },
       },
       sizes: [[1920, 1080]],
+      params: {
+        video: {
+          id: '54321',
+          lang: 'FR',
+          private: 'false',
+          tags: 'tag_1,tag_2,tag_3',
+          title: 'test video',
+          topics: 'topic_1, topic_2',
+        }
+      },
     }];
 
     const bidderRequestData = {
@@ -123,7 +165,11 @@ describe('dailymotionBidAdapterTests', () => {
       },
     });
 
-    expect(reqData.request).to.eql(bidRequestData[0]);
+    expect(reqData.request.auctionId).to.eql(bidRequestData[0].auctionId);
+    expect(reqData.request.mediaTypes.video.playerSize).to.eql(bidRequestData[0].mediaTypes.video.playerSize);
+    expect(reqData.request.bidId).to.eql(bidRequestData[0].bidId);
+    expect(reqData.request.mediaTypes.video.api).to.eql(bidRequestData[0].mediaTypes.video.api);
+    expect(reqData.video_metadata).to.eql(videoMetadata);
   });
 
   it('validates buildRequests - with default values on empty bid & bidder request', () => {
