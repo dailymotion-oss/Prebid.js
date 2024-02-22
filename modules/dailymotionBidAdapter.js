@@ -1,7 +1,7 @@
 import { config } from '../src/config.js';
 import { registerBidder } from '../src/adapters/bidderFactory.js';
 import { VIDEO } from '../src/mediaTypes.js';
-import {deepAccess} from '../src/utils.js';
+import { deepAccess } from '../src/utils.js';
 
 export const spec = {
   code: 'dailymotion',
