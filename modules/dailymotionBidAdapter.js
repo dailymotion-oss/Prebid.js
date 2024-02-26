@@ -85,15 +85,15 @@ function getVideoMetadata(bidRequest) {
   };
 
   const videoMetadata = {
-    description: videoParams.hasOwnProperty('description') ? videoParams.description : '',
-    duration: videoParams.hasOwnProperty('duration') ? videoParams.duration : 0,
-    iabcat2: videoParams.hasOwnProperty('iabcat2') ? videoParams.iabcat2 : '',
-    id: videoParams.hasOwnProperty('id') ? videoParams.id : '',
-    lang: videoParams.hasOwnProperty('lang') ? videoParams.lang : '',
-    private: videoParams.hasOwnProperty('private') ? videoParams.private : false,
-    tags: videoParams.hasOwnProperty('tags') ? videoParams.tags : '',
-    title: videoParams.hasOwnProperty('title') ? videoParams.title : '',
-    topics: videoParams.hasOwnProperty('topics') ? videoParams.topics : '',
+    description: videoParams.description ? videoParams.description : '',
+    duration: videoParams.duration ? videoParams.duration : 0,
+    iabcat2: videoParams.iabcat2 ? videoParams.iabcat2 : '',
+    id: videoParams.id ? videoParams.id : '',
+    lang: videoParams.lang ? videoParams.lang : '',
+    private: videoParams.private ? videoParams.private : false,
+    tags: videoParams.tags ? videoParams.tags : '',
+    title: videoParams.title ? videoParams.title : '',
+    topics: videoParams.topics ? videoParams.topics : '',
   }
 
   return videoMetadata
