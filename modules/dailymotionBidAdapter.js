@@ -17,7 +17,7 @@ export const spec = {
    */
   isBidRequestValid: () => {
     const dmConfig = config.getConfig('dailymotion');
-    return !!(dmConfig?.api_key && dmConfig?.position);
+    return !!(dmConfig?.api_key);
   },
 
   /**
