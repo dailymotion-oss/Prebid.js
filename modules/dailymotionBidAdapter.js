@@ -85,15 +85,16 @@ function getVideoMetadata(bidRequest) {
   };
 
   const videoMetadata = {
-    description: videoParams.description ? videoParams.description : '',
-    duration: videoParams.duration ? videoParams.duration : 0,
-    iabcat2: videoParams.iabcat2 ? videoParams.iabcat2 : '',
-    id: videoParams.id ? videoParams.id : '',
-    lang: videoParams.lang ? videoParams.lang : '',
-    private: videoParams.private ? videoParams.private : false,
-    tags: videoParams.tags ? videoParams.tags : '',
-    title: videoParams.title ? videoParams.title : '',
-    topics: videoParams.topics ? videoParams.topics : '',
+    description: videoParams.description || '',
+    duration: videoParams.duration || 0,
+    iabcat2: videoParams.iabcat2 || '',
+    id: videoParams.id || '',
+    lang: videoParams.lang || '',
+    private: videoParams.private || false,
+    tags: videoParams.tags || '',
+    title: videoParams.title || '',
+    topics: videoParams.topics || '',
+    xid: videoParams.xid || '',
   }
 
   return videoMetadata
