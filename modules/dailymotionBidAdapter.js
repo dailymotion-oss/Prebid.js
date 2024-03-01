@@ -3,6 +3,37 @@ import { registerBidder } from '../src/adapters/bidderFactory.js';
 import { VIDEO } from '../src/mediaTypes.js';
 import { deepAccess } from '../src/utils.js';
 
+/**
+ * Get video metadata from bid request
+ *
+ * @param {BidRequest} bidRequest A valid bid requests that should be sent to the Server.
+ * @return video metadata
+ */
+function getVideoMetadata(bidRequest) {
+  const videoAdUnit = deepAccess(bidRequest, 'mediaTypes.video', {});
+  const videoBidderParams = deepAccess(bidRequest, 'params.video', {});
+
+  const videoParams = {
+    ...videoAdUnit,
+    ...videoBidderParams, // Bidder Specific overrides
+  };
+
+  const videoMetadata = {
+    description: videoParams.description || '',
+    duration: videoParams.duration || 0,
+    iabcat2: videoParams.iabcat2 || '',
+    id: videoParams.id || '',
+    lang: videoParams.lang || '',
+    private: videoParams.private || false,
+    tags: videoParams.tags || '',
+    title: videoParams.title || '',
+    topics: videoParams.topics || '',
+    xid: videoParams.xid || '',
+  };
+
+  return videoMetadata;
+}
+
 export const spec = {
   code: 'dailymotion',
   gvlid: 573,
@@ -17,7 +48,7 @@ export const spec = {
    */
   isBidRequestValid: () => {
     const dmConfig = config.getConfig('dailymotion');
-    return !!(dmConfig?.api_key);
+    return !!dmConfig?.api_key;
   },
 
   /**
@@ -60,7 +91,7 @@ export const spec = {
     },
     options: {
       withCredentials: true,
-      crossOrigin: true
+      crossOrigin: true,
     },
   })),
 
@@ -74,30 +105,5 @@ export const spec = {
    */
   interpretResponse: serverResponse => serverResponse?.body ? [serverResponse.body] : [],
 };
-
-function getVideoMetadata(bidRequest) {
-  const videoAdUnit = deepAccess(bidRequest, 'mediaTypes.video', {});
-  const videoBidderParams = deepAccess(bidRequest, 'params.video', {});
-
-  const videoParams = {
-    ...videoAdUnit,
-    ...videoBidderParams // Bidder Specific overrides
-  };
-
-  const videoMetadata = {
-    description: videoParams.description || '',
-    duration: videoParams.duration || 0,
-    iabcat2: videoParams.iabcat2 || '',
-    id: videoParams.id || '',
-    lang: videoParams.lang || '',
-    private: videoParams.private || false,
-    tags: videoParams.tags || '',
-    title: videoParams.title || '',
-    topics: videoParams.topics || '',
-    xid: videoParams.xid || '',
-  }
-
-  return videoMetadata
-}
 
 registerBidder(spec);

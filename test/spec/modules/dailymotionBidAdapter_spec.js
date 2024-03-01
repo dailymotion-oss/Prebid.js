@@ -4,38 +4,33 @@ import { spec } from 'modules/dailymotionBidAdapter.js';
 import { VIDEO } from '../../../src/mediaTypes';
 
 describe('dailymotionBidAdapterTests', () => {
-  const videoMetadata = {
-    description: 'this is a test video',
-    duration: 556,
-    iabcat2: 'test_cat',
-    id: '54321',
-    lang: 'FR',
-    private: false,
-    tags: 'tag_1,tag_2,tag_3',
-    title: 'test video',
-    topics: 'topic_1, topic_2',
-    xid: 'x123456'
-  }
   // Validate that isBidRequestValid only validates requests with api_key
   it('validates isBidRequestValid', () => {
-    config.setConfig({ dailymotion: {} });
-    expect(spec.isBidRequestValid({
-      bidder: 'dailymotion',
-    })).to.be.false;
+    config.setBidderConfig({
+      bidders: ['dailymotion'],
+      config: { dailymotion: {} },
+    });
 
-    config.setConfig({ dailymotion: { api_key: 'test_api_key' } });
-    expect(spec.isBidRequestValid({
-      bidder: 'dailymotion',
-    })).to.be.true;
+    expect(config.runWithBidder('dailymotion', () => spec.isBidRequestValid())).to.be.false;
+
+    config.setBidderConfig({
+      bidders: ['dailymotion'],
+      config: { dailymotion: { api_key: 'test_api_key' } },
+    });
+
+    expect(config.runWithBidder('dailymotion', () => spec.isBidRequestValid())).to.be.true;
   });
 
   // Validate request generation
   it('validates buildRequests', () => {
     const dmConfig = { api_key: 'test_api_key' };
-    config.setConfig({
-      dailymotion: dmConfig,
-      coppa: true,
+
+    config.setBidderConfig({
+      bidders: ['dailymotion'],
+      config: { dailymotion: dmConfig },
     });
+
+    config.setConfig({ coppa: true });
 
     const bidRequestData = [{
       auctionId: 'b06c5141-fe8f-4cdf-9d7d-54415490a917',
@@ -60,8 +55,8 @@ describe('dailymotionBidAdapterTests', () => {
           tags: 'tag_1,tag_2,tag_3',
           title: 'test video',
           topics: 'topic_1, topic_2',
-          xid: 'x123456'
-        }
+          xid: 'x123456',
+        },
       },
     }];
 
@@ -77,7 +72,11 @@ describe('dailymotionBidAdapterTests', () => {
       },
     };
 
-    const [request] = spec.buildRequests(bidRequestData, bidderRequestData);
+    const [request] = config.runWithBidder(
+      'dailymotion',
+      () => spec.buildRequests(bidRequestData, bidderRequestData),
+    );
+
     const { data: reqData } = request;
 
     expect(request.url).to.equal('https://pb.dmxleo.com');
@@ -89,14 +88,36 @@ describe('dailymotionBidAdapterTests', () => {
     expect(reqData.request.bidId).to.eql(bidRequestData[0].bidId);
     expect(reqData.request.mediaTypes.video.api).to.eql(bidRequestData[0].mediaTypes.video.api);
     expect(reqData.request.mediaTypes.video.playerSize).to.eql(bidRequestData[0].mediaTypes.video.playerSize);
-    expect(reqData.video_metadata).to.eql(videoMetadata);
+    expect(reqData.video_metadata).to.eql({
+      description: bidRequestData[0].mediaTypes.video.description,
+      iabcat2: bidRequestData[0].mediaTypes.video.iabcat2,
+      id: bidRequestData[0].params.video.id,
+      lang: bidRequestData[0].params.video.lang,
+      private: bidRequestData[0].params.video.private,
+      tags: bidRequestData[0].params.video.tags,
+      title: bidRequestData[0].params.video.title,
+      topics: bidRequestData[0].params.video.topics,
+      xid: bidRequestData[0].params.video.xid,
+      // Overriden through bidder params
+      duration: bidRequestData[0].params.video.duration,
+    });
   });
 
   it('validates buildRequests - with default values on empty bid & bidder request', () => {
     const dmConfig = { api_key: 'test_api_key' };
-    config.setConfig({ dailymotion: dmConfig, coppa: false });
 
-    const [request] = spec.buildRequests([{}], {});
+    config.setBidderConfig({
+      bidders: ['dailymotion'],
+      config: { dailymotion: dmConfig },
+    });
+
+    config.setConfig({ coppa: false });
+
+    const [request] = config.runWithBidder(
+      'dailymotion',
+      () => spec.buildRequests([{}], {}),
+    );
+
     const { data: reqData } = request;
 
     expect(request.url).to.equal('https://pb.dmxleo.com');
@@ -131,7 +152,11 @@ describe('dailymotionBidAdapterTests', () => {
 
   it('validates buildRequests - with empty/undefined validBidRequests', () => {
     const dmConfig = { api_key: 'test_api_key' };
-    config.setConfig({ dailymotion: dmConfig });
+
+    config.setBidderConfig({
+      bidders: ['dailymotion'],
+      config: { dailymotion: dmConfig },
+    });
 
     expect(spec.buildRequests([], {})).to.have.lengthOf(0);
 
