@@ -96,7 +96,7 @@ Following video metadata fields can be added in mediaTypes.video or bids.params.
 * `duration` - Video duration in seconds
 * `iabcat2` - Video IAB category
 * `id` - Video unique ID in host video infrastructure
-* `lang` - Main language used in the video
+* `lang` - ISO 639-1 code for main language used in the video
 * `private` - True if video is not publicly available
 * `tags` - Tags for the video, comma separated
 * `title` - Video title
