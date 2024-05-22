@@ -179,6 +179,35 @@ export const spec = {
    * @return {Bid[]} An array of bids which were nested inside the server.
    */
   interpretResponse: serverResponse => serverResponse?.body ? [serverResponse.body] : [],
+
+  /**
+   * Retrieves user synchronization URLs based on provided options and consents.
+   *
+   * @param {object} syncOptions - Options for synchronization.
+   * @param {object[]} serverResponses - Array of server responses.
+   * @returns {object[]} - Array of synchronization URLs.
+   */
+  getUserSyncs: (syncOptions, serverResponses) => {
+    if (!!serverResponses?.length && (syncOptions.iframeEnabled || syncOptions.pixelEnabled)) {
+      const iframeSyncs = [];
+      const pixelSyncs = [];
+
+      serverResponses.forEach((response) => {
+        (response.user_syncs || []).forEach((syncUrl) => {
+          if (syncUrl.type === 'image') {
+            pixelSyncs.push({ url: syncUrl, type: 'image' });
+          } else if (syncUrl.type === 'iframe') {
+            iframeSyncs.push({ url: syncUrl, type: 'iframe' });
+          }
+        });
+      });
+
+      if (syncOptions.iframeEnabled) return iframeSyncs;
+      if (syncOptions.pixelEnabled) return pixelSyncs;
+    }
+
+    return [];
+  },
 };
 
 registerBidder(spec);
