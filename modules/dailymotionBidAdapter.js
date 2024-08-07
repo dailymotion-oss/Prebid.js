@@ -4,6 +4,8 @@ import { deepAccess } from '../src/utils.js';
 import { config } from '../src/config.js';
 import { userSync } from '../src/userSync.js';
 
+const DAILYMOTION_VENDOR_ID = 573;
+
 /**
  * Get video metadata from bid request
  *
@@ -110,7 +112,7 @@ function isUserSyncEnabled() {
 
 export const spec = {
   code: 'dailymotion',
-  gvlid: 573,
+  gvlid: DAILYMOTION_VENDOR_ID,
   supportedMediaTypes: [VIDEO],
 
   /**
@@ -158,9 +160,25 @@ export const spec = {
       (
         // Vendor consent
         deepAccess(bidderRequest, 'gdprConsent.vendorData.vendor.consents.573') === true &&
-        // Purposes
-        [1, 3, 4].every(v => deepAccess(bidderRequest, `gdprConsent.vendorData.purpose.consents.${v}`) === true) &&
-        // Flexible purposes
+        // Publisher restrictions : forbidden purposes
+        [1, 2, 3, 4, 7, 9, 10].every(v =>
+          deepAccess(bidderRequest, `gdprConsent.vendorData.publisher.restrictions.${v}.${DAILYMOTION_VENDOR_ID}`) !== 0
+        ) &&
+        // Publisher restrictions : need consent
+        [1, 2, 3, 4, 7, 9, 10].every(v =>
+          deepAccess(bidderRequest, `gdprConsent.vendorData.publisher.restrictions.${v}.${DAILYMOTION_VENDOR_ID}`) !== 1 ||
+          deepAccess(bidderRequest, `gdprConsent.vendorData.purpose.consents.${v}`) === true
+        ) &&
+        // Publisher restrictions : need legitimate interest
+        [1, 2, 3, 4, 7, 9, 10].every(v =>
+          deepAccess(bidderRequest, `gdprConsent.vendorData.publisher.restrictions.${v}.${DAILYMOTION_VENDOR_ID}`) !== 2 ||
+          deepAccess(bidderRequest, `gdprConsent.vendorData.purpose.legitimateInterests.${v}`) === true
+        ) &&
+        // Vendor purposes
+        [1, 3, 4].every(v =>
+          deepAccess(bidderRequest, `gdprConsent.vendorData.purpose.consents.${v}`) === true
+        ) &&
+        // Vendor flexible purposes
         [2, 7, 9, 10].every(v =>
           deepAccess(bidderRequest, `gdprConsent.vendorData.purpose.consents.${v}`) === true ||
           deepAccess(bidderRequest, `gdprConsent.vendorData.purpose.legitimateInterests.${v}`) === true
