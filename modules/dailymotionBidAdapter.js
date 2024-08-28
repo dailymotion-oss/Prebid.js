@@ -159,29 +159,21 @@ export const spec = {
       deepAccess(bidderRequest, 'gdprConsent.vendorData.hasGlobalConsent') === true ||
       (
         // Vendor consent
-        deepAccess(bidderRequest, 'gdprConsent.vendorData.vendor.consents.573') === true &&
-        // Publisher restrictions : forbidden purposes
-        [1, 2, 3, 4, 7, 9, 10].every(v =>
-          deepAccess(bidderRequest, `gdprConsent.vendorData.publisher.restrictions.${v}.${DAILYMOTION_VENDOR_ID}`) !== 0
-        ) &&
-        // Publisher restrictions : need consent
-        [1, 2, 3, 4, 7, 9, 10].every(v =>
-          deepAccess(bidderRequest, `gdprConsent.vendorData.publisher.restrictions.${v}.${DAILYMOTION_VENDOR_ID}`) !== 1 ||
-          deepAccess(bidderRequest, `gdprConsent.vendorData.purpose.consents.${v}`) === true
-        ) &&
-        // Publisher restrictions : need legitimate interest
-        [1, 2, 3, 4, 7, 9, 10].every(v =>
-          deepAccess(bidderRequest, `gdprConsent.vendorData.publisher.restrictions.${v}.${DAILYMOTION_VENDOR_ID}`) !== 2 ||
-          deepAccess(bidderRequest, `gdprConsent.vendorData.purpose.legitimateInterests.${v}`) === true
-        ) &&
-        // Vendor purposes
+        deepAccess(bidderRequest, `gdprConsent.vendorData.vendor.consents.${DAILYMOTION_VENDOR_ID}`) === true &&
+
+        // Purposes with legal basis "consent". These are not flexible, so if publisher requires legitimate interest (2) it cancels them
         [1, 3, 4].every(v =>
+          deepAccess(bidderRequest, `gdprConsent.vendorData.publisher.restrictions.${v}.${DAILYMOTION_VENDOR_ID}`) !== 0 &&
+          deepAccess(bidderRequest, `gdprConsent.vendorData.publisher.restrictions.${v}.${DAILYMOTION_VENDOR_ID}`) !== 2 &&
           deepAccess(bidderRequest, `gdprConsent.vendorData.purpose.consents.${v}`) === true
         ) &&
-        // Vendor flexible purposes
+
+        // Purposes with legal basis "legitimate interest" (default) or "consent" (when specified as such by publisher)
         [2, 7, 9, 10].every(v =>
-          deepAccess(bidderRequest, `gdprConsent.vendorData.purpose.consents.${v}`) === true ||
-          deepAccess(bidderRequest, `gdprConsent.vendorData.purpose.legitimateInterests.${v}`) === true
+          deepAccess(bidderRequest, `gdprConsent.vendorData.publisher.restrictions.${v}.${DAILYMOTION_VENDOR_ID}`) !== 0 &&
+          (deepAccess(bidderRequest, `gdprConsent.vendorData.publisher.restrictions.${v}.${DAILYMOTION_VENDOR_ID}`) === 1
+            ? deepAccess(bidderRequest, `gdprConsent.vendorData.purpose.consents.${v}`) === true
+            : deepAccess(bidderRequest, `gdprConsent.vendorData.purpose.legitimateInterests.${v}`) === true)
         )
       );
 
