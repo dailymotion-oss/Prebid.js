@@ -1448,6 +1448,7 @@ describe('dailymotionBidAdapterTests', () => {
     }];
 
     const bidderRequestData = {
+      timeout: 4242,
       refererInfo: {
         page: 'https://publisher.com',
       },
@@ -1462,14 +1463,30 @@ describe('dailymotionBidAdapterTests', () => {
         applicableSections: [5],
       },
       ortb2: {
+        bcat: ['IAB-1'],
+        bdav: ['bcav-1'],
         regs: {
           coppa: 1,
         },
         device: {
           lmt: 1,
           ifa: 'xxx',
+          devicetype: 2,
+          make: 'make',
+          model: 'model',
+          os: 'os',
+          osv: 'osv',
+          language: 'language',
+          geo: {
+            country: 'country',
+            region: 'region',
+            city: 'city',
+            zip: 'zip',
+            metro: 'metro'
+          },
           ext: {
             atts: 2,
+            ifatype: 'ifatype'
           },
         },
         app: {
@@ -1516,6 +1533,9 @@ describe('dailymotionBidAdapterTests', () => {
     expect(request.url).to.equal('https://pb.dmxleo.com');
 
     expect(reqData.pbv).to.eql('$prebid.version$');
+    expect(reqData.tmax).to.eql(bidderRequestData.timeout);
+    expect(reqData.bcat).to.eql(bidderRequestData.ortb2.bcat);
+    expect(reqData.bdav).to.eql(bidderRequestData.ortb2.bdav);
     expect(reqData.userSyncEnabled).to.be.true;
     expect(reqData.bidder_request).to.eql({
       refererInfo: bidderRequestData.refererInfo,
@@ -1530,6 +1550,18 @@ describe('dailymotionBidAdapterTests', () => {
     expect(reqData.device.lmt).to.eql(bidderRequestData.ortb2.device.lmt);
     expect(reqData.device.ifa).to.eql(bidderRequestData.ortb2.device.ifa);
     expect(reqData.device.atts).to.eql(bidderRequestData.ortb2.device.ext.atts);
+    expect(reqData.device.devicetype).to.eql(bidderRequestData.ortb2.device.devicetype);
+    expect(reqData.device.make).to.eql(bidderRequestData.ortb2.device.make);
+    expect(reqData.device.model).to.eql(bidderRequestData.ortb2.device.model);
+    expect(reqData.device.os).to.eql(bidderRequestData.ortb2.device.os);
+    expect(reqData.device.osv).to.eql(bidderRequestData.ortb2.device.osv);
+    expect(reqData.device.language).to.eql(bidderRequestData.ortb2.device.language);
+    expect(reqData.device.geo.country).to.eql(bidderRequestData.ortb2.device.geo.country);
+    expect(reqData.device.geo.region).to.eql(bidderRequestData.ortb2.device.geo.region);
+    expect(reqData.device.geo.city).to.eql(bidderRequestData.ortb2.device.geo.city);
+    expect(reqData.device.geo.zip).to.eql(bidderRequestData.ortb2.device.geo.zip);
+    expect(reqData.device.geo.metro).to.eql(bidderRequestData.ortb2.device.geo.metro);
+    expect(reqData.device.ext.ifatype).to.eql(bidderRequestData.ortb2.device.ext.ifatype);
     expect(reqData.request.auctionId).to.eql(bidRequestData[0].auctionId);
     expect(reqData.request.bidId).to.eql(bidRequestData[0].bidId);
 
@@ -1591,6 +1623,7 @@ describe('dailymotionBidAdapterTests', () => {
     }];
 
     const bidderRequestData = {
+      timeout: 4242,
       refererInfo: {
         page: 'https://publisher.com',
       },
@@ -1740,6 +1773,8 @@ describe('dailymotionBidAdapterTests', () => {
         playerVolume: bidRequestData[0].params.video.playerVolume,
       },
     });
+
+    expect(reqData.tmax).to.eql(bidderRequestData.timeout);
   });
 
   it('validates buildRequests - with default values on empty bid & bidder request', () => {
