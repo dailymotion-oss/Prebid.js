@@ -3,6 +3,7 @@ import { VIDEO } from '../src/mediaTypes.js';
 import { deepAccess } from '../src/utils.js';
 import { config } from '../src/config.js';
 import { userSync } from '../src/userSync.js';
+import { getDeviceType } from '../libraries/userAgentUtils/index.js';
 
 const DAILYMOTION_VENDOR_ID = 573;
 
@@ -183,15 +184,7 @@ export const spec = {
 
     const content = {
       'cattax': deepAccess(bidderRequest, 'ortb2.site.cattax', ''),
-    }
-
-    const site = {
-      'content': content,
-    }
-
-    const app = {
-      'content': content,
-    }
+    };
 
     return validBidRequests.map(bid => ({
       method: 'POST',
@@ -259,32 +252,31 @@ export const spec = {
           sizes: bid.sizes || [],
         },
         video_metadata: getVideoMetadata(bid, bidderRequest),
-        tmax: deepAccess(bidderRequest, 'timeout', ''),
-        bcat: deepAccess(bidderRequest, 'ortb2.bcat', []),
-        bdav: deepAccess(bidderRequest, 'ortb2.bdav', []), // TODO(SEI): seems like we are the first one to use it
+        tmax: deepAccess(bidderRequest, 'timeout', 0), // ok
+        bcat: deepAccess(bidderRequest, 'ortb2.bcat', []), // default bidRequest.params.bcat // bid on our side
+        bdav: deepAccess(bidderRequest, 'ortb2.bdav', []), // bidRequest.params.badv
         device: {
-          // TODO(SEI): There are a lot of util function to retrieve getDeviceType(), getOS(), getOsVersion(), getDeviceModel()
-          // Should we use them or use the field set in the bidderRequest?
-          devicetype: deepAccess(bidderRequest, 'ortb2.device.devicetype', ''),
-          make: deepAccess(bidderRequest, 'ortb2.device.make', ''),
-          model: deepAccess(bidderRequest, 'ortb2.device.model', ''),
-          os: deepAccess(bidderRequest, 'ortb2.device.os', ''),
-          osv: deepAccess(bidderRequest, 'ortb2.device.osv', ''),
-          language: deepAccess(bidderRequest, 'ortb2.device.language', ''),
+          devicetype: deepAccess(bidderRequest, 'ortb2.device.devicetype', ''), // pstudio, default value should we retrieve it from the UA ? Like in libraries/riseUtils/index.js with getDeviceType
+          make: deepAccess(bidderRequest, 'ortb2.device.make', ''), // pstudio with user agent function getVendor() as fb ?
+          model: deepAccess(bidderRequest, 'ortb2.device.model', ''), // pstudio with getDeviceModel() as fb ?
+          os: deepAccess(bidderRequest, 'ortb2.device.os', ''), // pstudio with getOsVersion() as fb?
+          osv: deepAccess(bidderRequest, 'ortb2.device.osv', ''), // pstudio
+          language: deepAccess(bidderRequest, 'ortb2.device.language', ''), // pstudio with default value navigator.language ?
           geo: {
-            country: deepAccess(bidderRequest, 'ortb2.device.geo.country', ''),
-            region: deepAccess(bidderRequest, 'ortb2.device.geo.region', ''),
-            city: deepAccess(bidderRequest, 'ortb2.device.geo.city', ''),
-            zip: deepAccess(bidderRequest, 'ortb2.device.geo.zip', ''),
-            metro: deepAccess(bidderRequest, 'ortb2.device.geo.metro', ''),
+            country: deepAccess(bidderRequest, 'ortb2.device.geo.country', ''), // pstudio default bid.params.country
+            region: deepAccess(bidderRequest, 'ortb2.device.geo.region', ''), // pstudio bid.params.region
+            city: deepAccess(bidderRequest, 'ortb2.device.geo.city', ''), // pstudio with default bid.params.city
+            zip: deepAccess(bidderRequest, 'ortb2.device.geo.zip', ''), // pstudio bid.params.zip
+            metro: deepAccess(bidderRequest, 'ortb2.device.geo.metro', ''), // pstudio
+          },
+          ext: {
+            ifatype: deepAccess(bidderRequest, 'ortb2.device.ext.ifatype', ''), // pstudio
           }
         },
-        // device.ext.ifa_type (be careful, on Prebid.js it seems to be device.ext.ifatype, we need to make sure of what it is there. We send ifa_type to our bidders).
-
         ...(isSite ? {'site': {
-          'content': deepAccess(bidderRequest, 'ortb2.site.cattax', ''),
+          content
         }} : {'app': {
-          'content': deepAccess(bidderRequest, 'ortb2.app.cattax', ''),
+          content
         }})
       },
       options: {
