@@ -1494,6 +1494,7 @@ describe('dailymotionBidAdapterTests', () => {
           storeurl: 'https://play.google.com/store/apps/details?id=app-bundle',
           content: {
             len: 556,
+            cattax: 3,
             data: [
               {
                 name: 'dataprovider.com',
@@ -1591,6 +1592,8 @@ describe('dailymotionBidAdapterTests', () => {
         playerVolume: null,
       },
     });
+
+    expect(reqData.app.content.cattax).to.eql(bidderRequestData.ortb2.app.content.cattax);
   });
 
   it('validates buildRequests with fallback values on ortb2 (gpp, iabcat2, id...)', () => {
@@ -1649,6 +1652,7 @@ describe('dailymotionBidAdapterTests', () => {
             url: 'https://test.com/test',
             livestream: 1,
             cat: ['IAB-2'],
+            cattax: 3,
             data: [
               undefined, // Undefined to check proper handling of edge cases
               {}, // Empty object to check proper handling of edge cases
@@ -1775,6 +1779,7 @@ describe('dailymotionBidAdapterTests', () => {
     });
 
     expect(reqData.tmax).to.eql(bidderRequestData.timeout);
+    expect(reqData.site.content.cattax).to.eql(bidderRequestData.ortb2.site.content.cattax);
   });
 
   it('validates buildRequests - with default values on empty bid & bidder request', () => {
@@ -1803,6 +1808,10 @@ describe('dailymotionBidAdapterTests', () => {
     expect(reqData.coppa).to.be.false;
 
     expect(reqData.pbv).to.eql('$prebid.version$');
+
+    expect(reqData.tmax).to.eql(0);
+    expect(reqData.bcat).to.eql([]);
+    expect(reqData.bdav).to.eql([]);
     expect(reqData.userSyncEnabled).to.be.false;
     expect(reqData.bidder_request).to.eql({
       gdprConsent: {
@@ -1867,6 +1876,138 @@ describe('dailymotionBidAdapterTests', () => {
         playerVolume: null,
       },
     });
+
+    expect(reqData.app.content.cattax).to.eql('')
+  });
+
+  describe('validates buildRequests for video metadata iabcat1 and iabcat2', () => {
+    let bidRequestData = [{
+      auctionId: 'b06c5141-fe8f-4cdf-9d7d-54415490a917',
+      bidId: 123456,
+      adUnitCode: 'preroll',
+      mediaTypes: {
+        video: {
+          api: [2, 7],
+          startdelay: 0,
+        },
+      },
+      sizes: [[1920, 1080]],
+      params: {
+        apiKey: 'test_api_key',
+        video: {
+          iabcat1: ['video-params-iabcat1'],
+          iabcat2: ['video-params-iabcat2'],
+        },
+      },
+    }];
+
+    let bidderRequestData = {
+      timeout: 4242,
+      refererInfo: {
+        page: 'https://publisher.com',
+      },
+      ortb2: {
+        site: {
+          content: {
+            data: [
+              {
+                name: 'dataprovider.com',
+                ext: { segtax: 4 },
+                segment: [{ id: '1' }],
+              },
+              {
+                name: 'dataprovider.com',
+                ext: { segtax: 5 },
+                segment: [{ id: '6' }],
+              },
+              {
+                name: 'dataprovider.com',
+                ext: { segtax: 5 },
+                segment: [{ id: '17' }, { id: '20' }],
+              },
+            ]
+          },
+        }
+      }
+    };
+
+    config.setConfig({
+      userSync: {
+        syncEnabled: true,
+        filterSettings: {
+          image: {
+            bidders: ['dailymotion'],
+            filter: 'include'
+          },
+          iframe: {
+            bidders: ['dailymotion'],
+            filter: 'exclude',
+          },
+        }
+      }
+    });
+
+    let [request] = config.runWithBidder(
+      'dailymotion',
+      () => spec.buildRequests(bidRequestData, bidderRequestData),
+    );
+
+    it('get iabcat1 and iabcat 2 from params video', () => {
+      expect(request.data.video_metadata.iabcat1).to.eql(bidRequestData[0].params.video.iabcat1);
+      expect(request.data.video_metadata.iabcat2).to.eql(bidRequestData[0].params.video.iabcat2);
+    })
+
+    it('get iabcat1 from content.cat and iabcat2 from data.segment', () => {
+      bidRequestData[0].params.video.iabcat1 = [];
+      bidRequestData[0].params.video.iabcat2 = [];
+      bidderRequestData.ortb2.site.content.cat = ['video-content-cat'];
+      bidderRequestData.ortb2.site.content.cattax = 3;
+
+      [request] = config.runWithBidder(
+        'dailymotion',
+        () => spec.buildRequests(bidRequestData, bidderRequestData),
+      );
+
+      expect(request.data.video_metadata.iabcat1).to.eql(bidderRequestData.ortb2.site.content.cat);
+      expect(request.data.video_metadata.iabcat2).to.eql(['6', '17', '20']);
+
+      bidRequestData[0].params.video.iabcat1 = null;
+      bidRequestData[0].params.video.iabcat2 = null;
+
+      [request] = config.runWithBidder(
+        'dailymotion',
+        () => spec.buildRequests(bidRequestData, bidderRequestData),
+      );
+
+      expect(request.data.video_metadata.iabcat1).to.eql(bidderRequestData.ortb2.site.content.cat);
+      expect(request.data.video_metadata.iabcat2).to.eql(['6', '17', '20']);
+    })
+
+    it('get iabcat2 from content.cat and iabcat1 from data.segment', () => {
+      bidRequestData[0].params.video.iabcat1 = [];
+      bidRequestData[0].params.video.iabcat2 = [];
+      bidderRequestData.ortb2.site.content.cat = ['video-content-cat'];
+      bidderRequestData.ortb2.site.content.cattax = 5;
+
+      [request] = config.runWithBidder(
+        'dailymotion',
+        () => spec.buildRequests(bidRequestData, bidderRequestData),
+      );
+
+      expect(request.data.video_metadata.iabcat1).to.eql(['1']);
+      expect(request.data.video_metadata.iabcat2).to.eql(bidderRequestData.ortb2.site.content.cat);
+
+      bidRequestData[0].params.video.iabcat1 = null;
+      bidRequestData[0].params.video.iabcat2 = null;
+
+      [request] = config.runWithBidder(
+        'dailymotion',
+        () => spec.buildRequests(bidRequestData, bidderRequestData),
+      );
+
+      expect(request.data.video_metadata.iabcat1).to.eql(['1']);
+      expect(request.data.video_metadata.iabcat2).to.eql(bidderRequestData.ortb2.site.content.cat);
+    })
   });
 
   it('validates buildRequests - with empty/undefined validBidRequests', () => {
