@@ -6,6 +6,10 @@ import { userSync } from '../src/userSync.js';
 
 const DAILYMOTION_VENDOR_ID = 573;
 
+function isArrayEmpty (_array) {
+  return !_array || (Array.isArray(_array) && _array.length === 0)
+}
+
 /**
  * Get video metadata from bid request
  *
@@ -22,6 +26,9 @@ function getVideoMetadata(bidRequest, bidderRequest) {
     : deepAccess(bidderRequest, 'ortb2.app');
   // Content object is either from Object: Site or Object: App
   const contentObj = deepAccess(siteOrAppObj, 'content')
+
+  const contentCattax = deepAccess(contentObj, 'cattax', '')
+  const isContentCattaxV1 = contentCattax === 3 || contentCattax === 4;
 
   const parsedContentData = {
     // Store as object keys to ensure uniqueness
@@ -49,14 +56,16 @@ function getVideoMetadata(bidRequest, bidderRequest) {
   const videoMetadata = {
     description: videoParams.description || '',
     duration: videoParams.duration || deepAccess(contentObj, 'len', 0),
-    iabcat1: Array.isArray(videoParams.iabcat1)
+    iabcat1: !isArrayEmpty(videoParams.iabcat1)
       ? videoParams.iabcat1
-      : Array.isArray(deepAccess(contentObj, 'cat'))
+      : (Array.isArray(deepAccess(contentObj, 'cat')) && isContentCattaxV1)
         ? contentObj.cat
         : Object.keys(parsedContentData.iabcat1),
-    iabcat2: Array.isArray(videoParams.iabcat2)
+    iabcat2: !isArrayEmpty(videoParams.iabcat2)
       ? videoParams.iabcat2
-      : Object.keys(parsedContentData.iabcat2),
+      : (Array.isArray(deepAccess(contentObj, 'cat')) && !isContentCattaxV1)
+        ? contentObj.cat
+        : Object.keys(parsedContentData.iabcat2),
     id: videoParams.id || deepAccess(contentObj, 'id', ''),
     lang: videoParams.lang || deepAccess(contentObj, 'language', ''),
     livestream: typeof videoParams.livestream === 'number'
@@ -179,11 +188,16 @@ export const spec = {
         )
       );
 
+    const isSite = !!deepAccess(bidderRequest, 'ortb2.site');
+
     return validBidRequests.map(bid => ({
       method: 'POST',
       url: 'https://pb.dmxleo.com',
       data: {
         pbv: '$prebid.version$',
+        tmax: deepAccess(bidderRequest, 'timeout', 0),
+        bcat: deepAccess(bidderRequest, 'ortb2.bcat', []),
+        bdav: deepAccess(bidderRequest, 'ortb2.bdav', []),
         bidder_request: {
           gdprConsent: {
             apiVersion: deepAccess(bidderRequest, 'gdprConsent.apiVersion', 1),
@@ -218,7 +232,23 @@ export const spec = {
             lmt: deepAccess(bidderRequest, 'ortb2.device.lmt', null),
             ifa: deepAccess(bidderRequest, 'ortb2.device.ifa', ''),
             atts: deepAccess(bidderRequest, 'ortb2.device.ext.atts', 0),
-          },
+            devicetype: deepAccess(bidderRequest, 'ortb2.device.devicetype', ''),
+            make: deepAccess(bidderRequest, 'ortb2.device.make', ''),
+            model: deepAccess(bidderRequest, 'ortb2.device.model', ''),
+            os: deepAccess(bidderRequest, 'ortb2.device.os', ''),
+            osv: deepAccess(bidderRequest, 'ortb2.device.osv', ''),
+            language: deepAccess(bidderRequest, 'ortb2.device.language', ''),
+            geo: {
+              country: deepAccess(bidderRequest, 'ortb2.device.geo.country', ''),
+              region: deepAccess(bidderRequest, 'ortb2.device.geo.region', ''),
+              city: deepAccess(bidderRequest, 'ortb2.device.geo.city', ''),
+              zip: deepAccess(bidderRequest, 'ortb2.device.geo.zip', ''),
+              metro: deepAccess(bidderRequest, 'ortb2.device.geo.metro', ''),
+            },
+            ext: {
+              ifatype: deepAccess(bidderRequest, 'ortb2.device.ext.ifatype', '')
+            }
+          }
         } : {}),
         userSyncEnabled: isUserSyncEnabled(),
         request: {
@@ -245,6 +275,19 @@ export const spec = {
           sizes: bid.sizes || [],
         },
         video_metadata: getVideoMetadata(bid, bidderRequest),
+        ...(isSite ? {
+          site: {
+            content: {
+              cattax: deepAccess(bidderRequest, 'ortb2.site.content.cattax', ''),
+            }
+          }
+        } : {
+          app: {
+            content: {
+              cattax: deepAccess(bidderRequest, 'ortb2.app.content.cattax', ''),
+            }
+          }
+        })
       },
       options: {
         withCredentials: allowCookieReading,
