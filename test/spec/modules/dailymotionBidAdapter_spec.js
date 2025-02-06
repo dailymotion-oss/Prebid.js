@@ -1464,7 +1464,7 @@ describe('dailymotionBidAdapterTests', () => {
       },
       ortb2: {
         bcat: ['IAB-1'],
-        bdav: ['bcav-1'],
+        badv: ['bcav-1'],
         regs: {
           coppa: 1,
         },
@@ -1536,7 +1536,7 @@ describe('dailymotionBidAdapterTests', () => {
     expect(reqData.pbv).to.eql('$prebid.version$');
     expect(reqData.tmax).to.eql(bidderRequestData.timeout);
     expect(reqData.bcat).to.eql(bidderRequestData.ortb2.bcat);
-    expect(reqData.bdav).to.eql(bidderRequestData.ortb2.bdav);
+    expect(reqData.badv).to.eql(bidderRequestData.ortb2.badv);
     expect(reqData.userSyncEnabled).to.be.true;
     expect(reqData.bidder_request).to.eql({
       refererInfo: bidderRequestData.refererInfo,
@@ -1811,7 +1811,7 @@ describe('dailymotionBidAdapterTests', () => {
 
     expect(reqData.tmax).to.eql(null);
     expect(reqData.bcat).to.eql([]);
-    expect(reqData.bdav).to.eql([]);
+    expect(reqData.badv).to.eql([]);
     expect(reqData.userSyncEnabled).to.be.false;
     expect(reqData.bidder_request).to.eql({
       gdprConsent: {

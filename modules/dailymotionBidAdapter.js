@@ -197,7 +197,7 @@ export const spec = {
         pbv: '$prebid.version$',
         tmax: deepAccess(bidderRequest, 'ortb2.tmax', null) || deepAccess(bidderRequest, 'timeout', null),
         bcat: deepAccess(bidderRequest, 'ortb2.bcat', []),
-        bdav: deepAccess(bidderRequest, 'ortb2.bdav', []),
+        badv: deepAccess(bidderRequest, 'ortb2.badv', []),
         bidder_request: {
           gdprConsent: {
             apiVersion: deepAccess(bidderRequest, 'gdprConsent.apiVersion', 1),
