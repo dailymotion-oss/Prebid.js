@@ -200,7 +200,7 @@ If you already specify [First-Party data](https://docs.prebid.org/features/first
 |---------------------------------------------------------------------------------|-----------------|
 | `ortb2.tmax`                                                                    | N/A             |
 | `ortb2.bcat`                                                                    | N/A             |
-| `ortb2.bdav`                                                                    | N/A             |
+| `ortb2.badv`                                                                    | N/A             |
 | `ortb2.site.content.cat` OR `ortb2.site.content.data` where `ext.segtax` is `4` | `iabcat1`       |
 | `ortb2.site.content.data` where `ext.segtax` is `5`, `6` or `7`                 | `iabcat2`       |
 | `ortb2.site.content.id`                                                         | `id`            |
