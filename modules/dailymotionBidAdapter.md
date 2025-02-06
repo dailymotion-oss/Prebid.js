@@ -198,6 +198,9 @@ If you already specify [First-Party data](https://docs.prebid.org/features/first
 
 | From ortb2                                                                      | Metadata fields |
 |---------------------------------------------------------------------------------|-----------------|
+| `ortb2.tmax`                                                                    | N/A             |
+| `ortb2.bcat`                                                                    | N/A             |
+| `ortb2.bdav`                                                                    | N/A             |
 | `ortb2.site.content.cat` OR `ortb2.site.content.data` where `ext.segtax` is `4` | `iabcat1`       |
 | `ortb2.site.content.data` where `ext.segtax` is `5`, `6` or `7`                 | `iabcat2`       |
 | `ortb2.site.content.id`                                                         | `id`            |
@@ -211,6 +214,18 @@ If you already specify [First-Party data](https://docs.prebid.org/features/first
 | `ortb2.device.lmt`                                                              | N/A             |
 | `ortb2.device.ifa`                                                              | N/A             |
 | `ortb2.device.ext.atts`                                                         | N/A             |
+| `ortb2.device.devicetype`                                                       | N/A             |
+| `ortb2.device.make`                                                             | N/A             |
+| `ortb2.device.model`                                                            | N/A             |
+| `ortb2.device.os`                                                               | N/A             |
+| `ortb2.device.osv`                                                              | N/A             |
+| `ortb2.device.language`                                                         | N/A             |
+| `ortb2.device.geo.country`                                                      | N/A             |
+| `ortb2.device.geo.region`                                                       | N/A             |
+| `ortb2.device.geo.city`                                                         | N/A             |
+| `ortb2.device.geo.zip`                                                          | N/A             |
+| `ortb2.device.geo.metro`                                                        | N/A             |
+| `ortb2.device.ext.ifa_type`                                                     | N/A             |
 
 ### Integrating the adapter
 

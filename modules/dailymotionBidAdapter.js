@@ -195,7 +195,7 @@ export const spec = {
       url: 'https://pb.dmxleo.com',
       data: {
         pbv: '$prebid.version$',
-        tmax: deepAccess(bidderRequest, 'timeout', null) || deepAccess(bidderRequest, 'ortb2.tmax', null),
+        tmax: deepAccess(bidderRequest, 'ortb2.tmax', null) || deepAccess(bidderRequest, 'timeout', null),
         bcat: deepAccess(bidderRequest, 'ortb2.bcat', []),
         bdav: deepAccess(bidderRequest, 'ortb2.bdav', []),
         bidder_request: {
