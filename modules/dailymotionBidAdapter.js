@@ -28,7 +28,7 @@ function getVideoMetadata(bidRequest, bidderRequest) {
   const contentObj = deepAccess(siteOrAppObj, 'content')
 
   const contentCattax = deepAccess(contentObj, 'cattax', '')
-  const isContentCattaxV1 = contentCattax === 3 || contentCattax === 4;
+  const isContentCattaxV1 = [1, 3, 4].includes(contentCattax);
 
   const parsedContentData = {
     // Store as object keys to ensure uniqueness
@@ -188,14 +188,14 @@ export const spec = {
         )
       );
 
-    const isSite = !!deepAccess(bidderRequest, 'ortb2.site');
+    const platform = deepAccess(bidderRequest, 'ortb2.site') ? 'site' : 'app';
 
     return validBidRequests.map(bid => ({
       method: 'POST',
       url: 'https://pb.dmxleo.com',
       data: {
         pbv: '$prebid.version$',
-        tmax: deepAccess(bidderRequest, 'timeout', 0),
+        tmax: deepAccess(bidderRequest, 'timeout', null) || deepAccess(bidderRequest, 'ortb2.tmax', null),
         bcat: deepAccess(bidderRequest, 'ortb2.bcat', []),
         bdav: deepAccess(bidderRequest, 'ortb2.bdav', []),
         bidder_request: {
@@ -246,7 +246,7 @@ export const spec = {
               metro: deepAccess(bidderRequest, 'ortb2.device.geo.metro', ''),
             },
             ext: {
-              ifatype: deepAccess(bidderRequest, 'ortb2.device.ext.ifatype', '')
+              ifa_type: deepAccess(bidderRequest, 'ortb2.device.ext.ifa_type', '')
             }
           }
         } : {}),
@@ -275,19 +275,11 @@ export const spec = {
           sizes: bid.sizes || [],
         },
         video_metadata: getVideoMetadata(bid, bidderRequest),
-        ...(isSite ? {
-          site: {
-            content: {
-              cattax: deepAccess(bidderRequest, 'ortb2.site.content.cattax', ''),
-            }
+        [platform]: {
+          content: {
+            cattax: deepAccess(bidderRequest, `ortb2.${platform}.content.cattax`, ''),
           }
-        } : {
-          app: {
-            content: {
-              cattax: deepAccess(bidderRequest, 'ortb2.app.content.cattax', ''),
-            }
-          }
-        })
+        },
       },
       options: {
         withCredentials: allowCookieReading,
