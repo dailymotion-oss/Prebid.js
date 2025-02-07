@@ -7,7 +7,7 @@ import { userSync } from '../src/userSync.js';
 
 const DAILYMOTION_VENDOR_ID = 573;
 
-const daimymotionOrtbConverter = ortbConverter({
+const dailymotionOrtbConverter = ortbConverter({
   context: {
     netRevenue: false,
     ttl: 30,
@@ -190,7 +190,7 @@ export const spec = {
    * @return ServerRequest Info describing the request to the server.
    */
   buildRequests: function(validBidRequests = [], bidderRequest) {
-    const ortbData = daimymotionOrtbConverter.toORTB({ bidRequests: validBidRequests, bidderRequest });
+    const ortbData = dailymotionOrtbConverter.toORTB({ bidRequests: validBidRequests, bidderRequest });
     // check consent to be able to read user cookie
     const allowCookieReading =
       // No GDPR applies
@@ -216,8 +216,6 @@ export const spec = {
             : deepAccess(bidderRequest, `gdprConsent.vendorData.purpose.legitimateInterests.${v}`) === true)
         )
       );
-
-    const platform = deepAccess(bidderRequest, 'ortb2.site') ? 'site' : 'app';
 
     return validBidRequests.map(bid => ({
       method: 'POST',
@@ -259,22 +257,6 @@ export const spec = {
             lmt: deepAccess(bidderRequest, 'ortb2.device.lmt', null),
             ifa: deepAccess(bidderRequest, 'ortb2.device.ifa', ''),
             atts: deepAccess(bidderRequest, 'ortb2.device.ext.atts', 0),
-            // devicetype: deepAccess(bidderRequest, 'ortb2.device.devicetype', ''),
-            // make: deepAccess(bidderRequest, 'ortb2.device.make', ''),
-            // model: deepAccess(bidderRequest, 'ortb2.device.model', ''),
-            // os: deepAccess(bidderRequest, 'ortb2.device.os', ''),
-            // osv: deepAccess(bidderRequest, 'ortb2.device.osv', ''),
-            // language: deepAccess(bidderRequest, 'ortb2.device.language', ''),
-            // geo: {
-            //   country: deepAccess(bidderRequest, 'ortb2.device.geo.country', ''),
-            //   region: deepAccess(bidderRequest, 'ortb2.device.geo.region', ''),
-            //   city: deepAccess(bidderRequest, 'ortb2.device.geo.city', ''),
-            //   zip: deepAccess(bidderRequest, 'ortb2.device.geo.zip', ''),
-            //   metro: deepAccess(bidderRequest, 'ortb2.device.geo.metro', ''),
-            // },
-            // ext: {
-            //   ifa_type: deepAccess(bidderRequest, 'ortb2.device.ext.ifa_type', '')
-            // }
           }
         } : {}),
         userSyncEnabled: isUserSyncEnabled(),
@@ -302,11 +284,6 @@ export const spec = {
           sizes: bid.sizes || [],
         },
         video_metadata: getVideoMetadata(bid, bidderRequest),
-        [platform]: {
-          content: {
-            cattax: deepAccess(bidderRequest, `ortb2.${platform}.content.cattax`, ''),
-          }
-        },
       },
       options: {
         withCredentials: allowCookieReading,
