@@ -1403,6 +1403,7 @@ describe('dailymotionBidAdapterTests', () => {
 
   it('validates buildRequests with content values from App', () => {
     const bidRequestData = [{
+      getFloor: () => ({ currency: 'USD', floor: 3 }),
       auctionId: 'b06c5141-fe8f-4cdf-9d7d-54415490a917',
       bidId: 123456,
       adUnitCode: 'preroll',
@@ -1534,9 +1535,115 @@ describe('dailymotionBidAdapterTests', () => {
     expect(request.url).to.equal('https://pb.dmxleo.com');
 
     expect(reqData.pbv).to.eql('$prebid.version$');
-    expect(reqData.tmax).to.eql(bidderRequestData.timeout);
-    expect(reqData.bcat).to.eql(bidderRequestData.ortb2.bcat);
-    expect(reqData.badv).to.eql(bidderRequestData.ortb2.badv);
+
+    const expectedOrtb = {
+      'app': {
+        'bundle': 'app-bundle',
+        'content': {
+          'cattax': 3,
+          'data': [
+            {
+              'ext': {
+                'segtax': 4
+              },
+              'name': 'dataprovider.com',
+              'segment': [
+                {
+                  'id': 'IAB-1'
+                }
+              ]
+            },
+            {
+              'ext': {
+                'segtax': 5
+              },
+              'name': 'dataprovider.com',
+              'segment': [
+                {
+                  'id': '200'
+                }
+              ],
+            }
+          ],
+          'len': 556,
+        },
+        'storeurl': 'https://play.google.com/store/apps/details?id=app-bundle',
+      },
+      'badv': [
+        'bcav-1'
+      ],
+      'bcat': [
+        'IAB-1'
+      ],
+      'device': {
+        'devicetype': 2,
+        'ext': {
+          'atts': 2,
+          'ifa_type': 'ifa_type'
+        },
+        'geo': {
+          'city': 'city',
+          'country': 'country',
+          'metro': 'metro',
+          'region': 'region',
+          'zip': 'zip',
+        },
+        'ifa': 'xxx',
+        'language': 'language',
+        'lmt': 1,
+        'make': 'make',
+        'model': 'model',
+        'os': 'os',
+        'osv': 'osv',
+      },
+      'imp': [{
+        'bidfloor': 3,
+        'bidfloorcur': 'USD',
+        'id': 123456,
+        'secure': 1,
+        'video': {
+          'api': [
+            2,
+            7
+          ],
+          'h': 720,
+          'maxduration': 30,
+          'mimes': [
+            'video/mp4'
+          ],
+          'minduration': 5,
+          'playbackmethod': [
+            3
+          ],
+          'plcmt': 1,
+          'protocols': [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          'skip': 1,
+          'skipafter': 5,
+          'skipmin': 10,
+          'startdelay': 0,
+          'w': 1280,
+        }
+      }
+      ],
+      'regs': {
+        'coppa': 1,
+      },
+      'test': 0,
+      'tmax': 4242,
+    }
+
+    expect(reqData.ortb.id).to.be.not.empty;
+    delete reqData.ortb.id; // ortb id is genrated randomly
+    expect(reqData.ortb).to.eql(expectedOrtb);
     expect(reqData.userSyncEnabled).to.be.true;
     expect(reqData.bidder_request).to.eql({
       refererInfo: bidderRequestData.refererInfo,
@@ -1551,18 +1658,6 @@ describe('dailymotionBidAdapterTests', () => {
     expect(reqData.device.lmt).to.eql(bidderRequestData.ortb2.device.lmt);
     expect(reqData.device.ifa).to.eql(bidderRequestData.ortb2.device.ifa);
     expect(reqData.device.atts).to.eql(bidderRequestData.ortb2.device.ext.atts);
-    expect(reqData.device.devicetype).to.eql(bidderRequestData.ortb2.device.devicetype);
-    expect(reqData.device.make).to.eql(bidderRequestData.ortb2.device.make);
-    expect(reqData.device.model).to.eql(bidderRequestData.ortb2.device.model);
-    expect(reqData.device.os).to.eql(bidderRequestData.ortb2.device.os);
-    expect(reqData.device.osv).to.eql(bidderRequestData.ortb2.device.osv);
-    expect(reqData.device.language).to.eql(bidderRequestData.ortb2.device.language);
-    expect(reqData.device.geo.country).to.eql(bidderRequestData.ortb2.device.geo.country);
-    expect(reqData.device.geo.region).to.eql(bidderRequestData.ortb2.device.geo.region);
-    expect(reqData.device.geo.city).to.eql(bidderRequestData.ortb2.device.geo.city);
-    expect(reqData.device.geo.zip).to.eql(bidderRequestData.ortb2.device.geo.zip);
-    expect(reqData.device.geo.metro).to.eql(bidderRequestData.ortb2.device.geo.metro);
-    expect(reqData.device.ext.ifa_type).to.eql(bidderRequestData.ortb2.device.ext.ifa_type);
     expect(reqData.request.auctionId).to.eql(bidRequestData[0].auctionId);
     expect(reqData.request.bidId).to.eql(bidRequestData[0].bidId);
 
@@ -1593,7 +1688,7 @@ describe('dailymotionBidAdapterTests', () => {
       },
     });
 
-    expect(reqData.app.content.cattax).to.eql(bidderRequestData.ortb2.app.content.cattax);
+    // expect(reqData.app.content.cattax).to.eql(bidderRequestData.ortb2.app.content.cattax);
   });
 
   it('validates buildRequests with fallback values on ortb2 (gpp, iabcat2, id...)', () => {
@@ -1723,7 +1818,131 @@ describe('dailymotionBidAdapterTests', () => {
 
     expect(request.url).to.equal('https://pb.dmxleo.com');
 
+    const expectedOrtb = {
+      'imp': [{
+        'id': 123456,
+        'secure': 1,
+        'video': {
+          'api': [
+            2,
+            7
+          ],
+          'startdelay': 0,
+        }
+      }
+      ],
+      'regs': {
+        'coppa': 0,
+        'gpp': 'xxx',
+        'gpp_sid': [
+          5
+        ],
+      },
+      'site': {
+        'cat': [
+          'IAB-1',
+        ],
+        'content': {
+          'cat': [
+            'IAB-2',
+          ],
+          'cattax': 3,
+          'data': [
+            undefined,
+            {},
+            {
+              'ext': {}
+            },
+            {
+              'ext': {
+                'segtax': 22
+              },
+              'name': 'dataprovider.com',
+              'segment': [
+                {
+                  'id': '400'
+                }
+              ]
+            },
+            {
+              'ext': {
+                'segtax': 5
+              },
+              'name': 'dataprovider.com',
+              'segment': undefined
+            },
+            {
+              'ext': {
+                'segtax': 4
+              },
+              'name': 'dataprovider.com',
+              'segment': undefined
+            },
+            {
+              'ext': {
+                'segtax': 5
+              },
+              'name': 'dataprovider.com',
+              'segment': [
+                {
+                  'id': 2222
+                }
+              ]
+            },
+            {
+              'ext': {
+                'segtax': 5
+              },
+              'name': 'dataprovider.com',
+              'segment': [
+                {
+                  'id': '6'
+                }
+              ]
+            },
+            {
+              'ext': {
+                'segtax': 5
+              },
+              'name': 'dataprovider.com',
+              'segment': [
+                {
+                  'id': '6'
+                }
+              ]
+            },
+            {
+              'ext': {
+                'segtax': 5
+              },
+              'name': 'dataprovider.com',
+              'segment': [
+                {
+                  'id': '17'
+                },
+                {
+                  'id': '20'
+                }
+              ]
+            }
+          ],
+          'id': '54321',
+          'keywords': 'tag_1,tag_2,tag_3',
+          'language': 'FR',
+          'livestream': 1,
+          'title': 'test video',
+          'url': 'https://test.com/test',
+        }
+      },
+      'test': 0,
+      'tmax': 31416
+    }
+
     expect(reqData.pbv).to.eql('$prebid.version$');
+    expect(reqData.ortb.id).to.be.not.empty;
+    delete reqData.ortb.id; // ortb id is genrated randomly
+    expect(reqData.ortb).to.eql(expectedOrtb);
+
     expect(reqData.userSyncEnabled).to.be.true;
     expect(reqData.bidder_request).to.eql({
       refererInfo: bidderRequestData.refererInfo,
@@ -1777,9 +1996,6 @@ describe('dailymotionBidAdapterTests', () => {
         playerVolume: bidRequestData[0].params.video.playerVolume,
       },
     });
-
-    expect(reqData.tmax).to.eql(bidderRequestData.ortb2.tmax);
-    expect(reqData.site.content.cattax).to.eql(bidderRequestData.ortb2.site.content.cattax);
   });
 
   it('validates buildRequests - with default values on empty bid & bidder request', () => {
@@ -1809,9 +2025,17 @@ describe('dailymotionBidAdapterTests', () => {
 
     expect(reqData.pbv).to.eql('$prebid.version$');
 
-    expect(reqData.tmax).to.eql(null);
-    expect(reqData.bcat).to.eql([]);
-    expect(reqData.badv).to.eql([]);
+    expect(reqData.ortb.id).to.be.not.empty;
+    delete reqData.ortb.id; // ortb id is generated randomly
+    expect(reqData.ortb).to.eql({
+      'imp': [
+        {
+          'id': undefined,
+          'secure': 1
+        },
+      ],
+      'test': 0
+    });
     expect(reqData.userSyncEnabled).to.be.false;
     expect(reqData.bidder_request).to.eql({
       gdprConsent: {
@@ -1876,8 +2100,6 @@ describe('dailymotionBidAdapterTests', () => {
         playerVolume: null,
       },
     });
-
-    expect(reqData.app.content.cattax).to.eql('')
   });
 
   describe('validates buildRequests for video metadata iabcat1 and iabcat2', () => {
@@ -2013,6 +2235,40 @@ describe('dailymotionBidAdapterTests', () => {
       expect(request.data.video_metadata.iabcat2).to.eql(bidderRequestData.ortb2.site.content.cat);
     })
   });
+
+  it('validates buildRequests - with null floor as object', () => {
+    const bidRequest = [{
+      params: {
+        apiKey: 'test_api_key',
+      },
+      getFloor: () => null
+    }];
+
+    config.setConfig({
+      userSync: {
+        syncEnabled: false,
+      }
+    });
+
+    const [request] = config.runWithBidder(
+      'dailymotion',
+      () => spec.buildRequests(bidRequest, {}),
+    );
+
+    const { data: reqData } = request;
+
+    expect(reqData.ortb.id).to.be.not.empty;
+    delete reqData.ortb.id; // ortb id is generated randomly
+    expect(reqData.ortb).to.eql({
+      'imp': [
+        {
+          'id': undefined,
+          'secure': 1
+        },
+      ],
+      'test': 0
+    });
+  })
 
   it('validates buildRequests - with empty/undefined validBidRequests', () => {
     expect(spec.buildRequests([], {})).to.have.lengthOf(0);

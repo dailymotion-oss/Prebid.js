@@ -11,6 +11,15 @@ Maintainer: ad-leo-engineering@dailymotion.com
 Dailymotion prebid adapter.
 Supports video ad units in instream context.
 
+### Usage
+
+Make sure to have the following modules listed while building prebid : `priceFloors,dailymotionBidAdapter`
+`priceFloors` is neede to retrieve the price floor: https://docs.prebid.org/dev-docs/modules/floors.html 
+
+```shell
+gulp build --modules=rtdModule,dailymotionBidAdapter
+```
+
 ### Configuration options
 
 Before calling this adapter, you need to at least set a video adUnit in an instream context and the API key in the bid parameters:
