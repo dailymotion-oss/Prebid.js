@@ -17,7 +17,7 @@ Make sure to have the following modules listed while building prebid : `priceFlo
 `priceFloors` module is needed to retrieve the price floor: https://docs.prebid.org/dev-docs/modules/floors.html 
 
 ```shell
-gulp build --modules=rtdModule,dailymotionBidAdapter
+gulp build --modules=priceFloors,dailymotionBidAdapter
 ```
 
 ### Configuration options
@@ -170,7 +170,7 @@ const adUnits = [
         maxduration: 30,
         playbackmethod: [3],
         plcmt: 1,
-        protocols: [7, 8, 11, 12, 13, 14]
+        protocols: [7, 8, 11, 12, 13, 14],
         startdelay: 0,
         w: 1280,
         h: 720,
