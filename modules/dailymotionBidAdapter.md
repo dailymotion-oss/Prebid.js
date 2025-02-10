@@ -123,7 +123,8 @@ The following request will be sent to Dailymotion Prebid Service :
 
 
 
-Or at the package level
+Or the price floor can be set  at the package level, for example : 
+
 ```javascript
 const adUnits = [
   {
