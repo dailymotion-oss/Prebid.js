@@ -14,7 +14,7 @@ Supports video ad units in instream context.
 ### Usage
 
 Make sure to have the following modules listed while building prebid : `priceFloors,dailymotionBidAdapter`
-`priceFloors` is neede to retrieve the price floor: https://docs.prebid.org/dev-docs/modules/floors.html 
+`priceFloors` module is needed to retrieve the price floor: https://docs.prebid.org/dev-docs/modules/floors.html 
 
 ```shell
 gulp build --modules=rtdModule,dailymotionBidAdapter

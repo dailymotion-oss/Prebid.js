@@ -1642,7 +1642,7 @@ describe('dailymotionBidAdapterTests', () => {
     }
 
     expect(reqData.ortb.id).to.be.not.empty;
-    delete reqData.ortb.id; // ortb id is genrated randomly
+    delete reqData.ortb.id; // ortb id is generated randomly
     expect(reqData.ortb).to.eql(expectedOrtb);
     expect(reqData.userSyncEnabled).to.be.true;
     expect(reqData.bidder_request).to.eql({
@@ -1687,8 +1687,6 @@ describe('dailymotionBidAdapterTests', () => {
         playerVolume: null,
       },
     });
-
-    // expect(reqData.app.content.cattax).to.eql(bidderRequestData.ortb2.app.content.cattax);
   });
 
   it('validates buildRequests with fallback values on ortb2 (gpp, iabcat2, id...)', () => {
@@ -1940,7 +1938,7 @@ describe('dailymotionBidAdapterTests', () => {
 
     expect(reqData.pbv).to.eql('$prebid.version$');
     expect(reqData.ortb.id).to.be.not.empty;
-    delete reqData.ortb.id; // ortb id is genrated randomly
+    delete reqData.ortb.id; // ortb id is generated randomly
     expect(reqData.ortb).to.eql(expectedOrtb);
 
     expect(reqData.userSyncEnabled).to.be.true;
@@ -2236,7 +2234,7 @@ describe('dailymotionBidAdapterTests', () => {
     })
   });
 
-  it('validates buildRequests - with null floor as object', () => {
+  it('validates buildRequests - with null floor as object for getFloor function', () => {
     const bidRequest = [{
       params: {
         apiKey: 'test_api_key',
