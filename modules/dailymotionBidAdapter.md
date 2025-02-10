@@ -14,6 +14,7 @@ Supports video ad units in instream context.
 ### Usage
 
 Make sure to have the following modules listed while building prebid : `priceFloors,dailymotionBidAdapter`
+
 `priceFloors` module is needed to retrieve the price floor: https://docs.prebid.org/dev-docs/modules/floors.html 
 
 ```shell
@@ -66,6 +67,116 @@ pbjs.setConfig({
   },
 });
 ```
+
+#### Price floor
+
+The price floor can be set at the ad unit level, for example : 
+
+```javascript
+const adUnits = [{
+  floors: {
+    currency: 'USD',
+    schema: {
+      fields: [ 'mediaType', 'size' ]
+    },
+    values: {
+      'video|300x250': 2.22,
+      'video|*': 1
+    }
+  },
+  bids: [{
+    bidder: 'dailymotion',
+    params: {
+      apiKey: 'dailymotion-testing',
+    }
+  }],
+  code: 'test-ad-unit',
+  mediaTypes: {
+    video: {
+      playerSize: [300, 250],
+      context: 'instream',
+    },
+  }
+}];
+
+// Do not forget to set an empty object for "floors" to active the price floor module
+pbjs.setConfig({floors: {}});
+```
+
+The following request will be sent to Dailymotion Prebid Service : 
+
+```javascript
+{
+  "pbv": "9.23.0-pre",
+  "ortb": {
+    "imp": [
+      {
+        ...
+        "bidfloor": 2.22,
+        "bidfloorcur": "USD"
+      }
+    ],
+  }
+  ...
+}
+```
+
+
+
+Or at the package level
+```javascript
+const adUnits = [
+  {
+    bids: [{
+      bidder: 'dailymotion',
+      params: {
+        apiKey: 'dailymotion-testing',
+      }
+    }],
+    code: 'test-ad-unit',
+    mediaTypes: {
+      video: {
+        playerSize: [1280,720],
+        context: 'instream',
+      },
+    }
+  }
+];
+
+pbjs.setConfig({
+  floors: {
+      data: { 
+          currency: 'USD',
+          schema: {
+              fields: [ 'mediaType', 'size' ]
+          },
+          values: {
+              'video|300x250': 2.22,
+              'video|*': 1
+          }
+      }
+  }
+})
+```
+
+This will send the following bid floor in the request to Daiymotion Prebid Service : 
+```javascript
+{
+  "pbv": "9.23.0-pre",
+  "ortb": {
+    "imp": [
+      {
+        ...
+        "bidfloor": 1,
+        "bidfloorcur": "USD"
+      }
+    ],
+    ...
+  }
+}
+```
+
+You can also set dynamic floors, for more informations : https://docs.prebid.org/dev-docs/modules/floors.html#bid-adapter-interface
 
 ### Test Parameters
 
