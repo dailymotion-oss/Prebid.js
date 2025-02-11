@@ -9,8 +9,8 @@ const DAILYMOTION_VENDOR_ID = 573;
 
 const dailymotionOrtbConverter = ortbConverter({
   context: {
-    netRevenue: false,
-    ttl: 30,
+    netRevenue: true,
+    ttl: 600,
   },
   imp(buildImp, bidRequest, context) {
     const imp = buildImp(bidRequest, context);
