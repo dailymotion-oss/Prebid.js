@@ -34,8 +34,8 @@ const dailymotionOrtbConverter = ortbConverter({
   },
 });
 
-function isArrayEmpty (_array) {
-  return !_array || (Array.isArray(_array) && _array.length === 0)
+function isArrayFilled (_array) {
+  return _array && Array.isArray(_array) && _array.length !== 0;
 }
 
 /**
@@ -55,8 +55,8 @@ function getVideoMetadata(bidRequest, bidderRequest) {
   // Content object is either from Object: Site or Object: App
   const contentObj = deepAccess(siteOrAppObj, 'content')
 
-  const contentCattax = deepAccess(contentObj, 'cattax', '')
-  const isContentCattaxV1 = [1, 3, 4].includes(contentCattax);
+  const contentCattax = deepAccess(contentObj, 'cattax', 0);
+  const isContentCattaxV1 = contentCattax === 1;
 
   const parsedContentData = {
     // Store as object keys to ensure uniqueness
@@ -84,14 +84,14 @@ function getVideoMetadata(bidRequest, bidderRequest) {
   const videoMetadata = {
     description: videoParams.description || '',
     duration: videoParams.duration || deepAccess(contentObj, 'len', 0),
-    iabcat1: !isArrayEmpty(videoParams.iabcat1)
+    iabcat1: isArrayFilled(videoParams.iabcat1)
       ? videoParams.iabcat1
-      : (Array.isArray(deepAccess(contentObj, 'cat')) && isContentCattaxV1)
+      : (isArrayFilled(deepAccess(contentObj, 'cat')) && isContentCattaxV1)
         ? contentObj.cat
         : Object.keys(parsedContentData.iabcat1),
-    iabcat2: !isArrayEmpty(videoParams.iabcat2)
+    iabcat2: isArrayFilled(videoParams.iabcat2)
       ? videoParams.iabcat2
-      : (Array.isArray(deepAccess(contentObj, 'cat')) && !isContentCattaxV1)
+      : (isArrayFilled(deepAccess(contentObj, 'cat')) && !isContentCattaxV1)
         ? contentObj.cat
         : Object.keys(parsedContentData.iabcat2),
     id: videoParams.id || deepAccess(contentObj, 'id', ''),
@@ -245,20 +245,6 @@ export const spec = {
           api_key: bid.params.apiKey,
           ts: bid.params.dmTs,
         },
-        // Cast boolean in any case (value should be 0 or 1) to ensure type
-        coppa: !!deepAccess(bidderRequest, 'ortb2.regs.coppa'),
-        // In app context, we need to retrieve additional informations
-        ...(!deepAccess(bidderRequest, 'ortb2.site') && !!deepAccess(bidderRequest, 'ortb2.app') ? {
-          appBundle: deepAccess(bidderRequest, 'ortb2.app.bundle', ''),
-          appStoreUrl: deepAccess(bidderRequest, 'ortb2.app.storeurl', ''),
-        } : {}),
-        ...(deepAccess(bidderRequest, 'ortb2.device') ? {
-          device: {
-            lmt: deepAccess(bidderRequest, 'ortb2.device.lmt', null),
-            ifa: deepAccess(bidderRequest, 'ortb2.device.ifa', ''),
-            atts: deepAccess(bidderRequest, 'ortb2.device.ext.atts', 0),
-          }
-        } : {}),
         userSyncEnabled: isUserSyncEnabled(),
         request: {
           adUnitCode: deepAccess(bid, 'adUnitCode', ''),
