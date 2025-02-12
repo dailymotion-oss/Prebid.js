@@ -35,7 +35,7 @@ const dailymotionOrtbConverter = ortbConverter({
 });
 
 function isArrayFilled (_array) {
-  return _array && Array.isArray(_array) && _array.length !== 0;
+  return _array && Array.isArray(_array) && _array.length > 0;
 }
 
 /**
