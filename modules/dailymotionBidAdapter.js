@@ -57,7 +57,7 @@ function getVideoMetadata(bidRequest, bidderRequest) {
 
   const contentCattax = deepAccess(contentObj, 'cattax', 0);
   const isContentCattaxV1 = contentCattax === 1;
-  const isContentCattaxV2 = [2, 5, 6, 7, 9].includes(contentCattax);
+  const isContentCattaxV2 = [2, 5, 6].includes(contentCattax);
 
   const parsedContentData = {
     // Store as object keys to ensure uniqueness
