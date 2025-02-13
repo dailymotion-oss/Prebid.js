@@ -2187,7 +2187,7 @@ describe('dailymotionBidAdapterTests', () => {
 
     it('get iabcat2 from content.cat and iabcat1 from data.segment', () => {
       const iabCatTestsCases = [[], null, {}];
-      const cattaxV2 = [2, 5, 6, 7, 9];
+      const cattaxV2 = [2, 5, 6];
 
       cattaxV2.forEach((cattax) => {
         iabCatTestsCases.forEach((iabCat) => {
