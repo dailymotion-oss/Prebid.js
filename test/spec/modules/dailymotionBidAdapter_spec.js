@@ -2187,20 +2187,23 @@ describe('dailymotionBidAdapterTests', () => {
 
     it('get iabcat2 from content.cat and iabcat1 from data.segment', () => {
       const iabCatTestsCases = [[], null, {}];
+      const cattaxV2 = [2, 5, 6, 7, 9];
 
-      iabCatTestsCases.forEach((iabCat) => {
-        bidRequestData[0].params.video.iabcat1 = iabCat;
-        bidRequestData[0].params.video.iabcat2 = iabCat;
-        bidderRequestData.ortb2.site.content.cat = ['video-content-cat'];
-        bidderRequestData.ortb2.site.content.cattax = 5;
+      cattaxV2.forEach((cattax) => {
+        iabCatTestsCases.forEach((iabCat) => {
+          bidRequestData[0].params.video.iabcat1 = iabCat;
+          bidRequestData[0].params.video.iabcat2 = iabCat;
+          bidderRequestData.ortb2.site.content.cat = ['video-content-cat'];
+          bidderRequestData.ortb2.site.content.cattax = cattax;
 
-        [request] = config.runWithBidder(
-          'dailymotion',
-          () => spec.buildRequests(bidRequestData, bidderRequestData),
-        );
+          [request] = config.runWithBidder(
+            'dailymotion',
+            () => spec.buildRequests(bidRequestData, bidderRequestData),
+          );
 
-        expect(request.data.video_metadata.iabcat1).to.eql(['1']);
-        expect(request.data.video_metadata.iabcat2).to.eql(bidderRequestData.ortb2.site.content.cat);
+          expect(request.data.video_metadata.iabcat1).to.eql(['1']);
+          expect(request.data.video_metadata.iabcat2).to.eql(bidderRequestData.ortb2.site.content.cat);
+        })
       })
     })
 
