@@ -2209,7 +2209,7 @@ describe('dailymotionBidAdapterTests', () => {
 
     it('get iabcat1 and iabcat2 from data.segmnet', () => {
       const contentCatTestCases = [[], null, {}];
-      const cattaxTestCases = [1, 5];
+      const cattaxTestCases = [1, 2, 5, 6];
 
       cattaxTestCases.forEach((cattax) => {
         contentCatTestCases.forEach((contentCat) => {
