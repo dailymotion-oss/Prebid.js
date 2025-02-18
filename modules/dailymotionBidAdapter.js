@@ -287,7 +287,7 @@ export const spec = {
    * @param {*} serverResponse A successful response from the server.
    * @return {Bid[]} An array of bids which were nested inside the server.
    */
-  interpretResponse: serverResponse => serverResponse?.body ? [serverResponse.body] : [],
+  interpretResponse: serverResponse => serverResponse?.body?.cpm ? [serverResponse.body] : [],
 
   /**
    * Retrieves user synchronization URLs based on provided options and consents.

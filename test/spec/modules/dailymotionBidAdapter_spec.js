@@ -2292,6 +2292,17 @@ describe('dailymotionBidAdapterTests', () => {
     expect(bid).to.eql(serverResponse.body);
   });
 
+  it('validates interpretResponse - without bid (no cpm)', () => {
+    const serverResponse = {
+      body: {
+        requestId: 'test_requestid',
+      },
+    };
+
+    const bids = spec.interpretResponse(serverResponse);
+    expect(bids).to.have.lengthOf(0);
+  });
+
   it('validates interpretResponse - with empty/undefined serverResponse', () => {
     expect(spec.interpretResponse({})).to.have.lengthOf(0);
 
