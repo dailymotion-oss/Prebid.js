@@ -1600,7 +1600,7 @@ describe('dailymotionBidAdapterTests', () => {
         'bidfloorcur': 'USD',
         'id': 123456,
         'secure': 1,
-        'video': {
+        ...(FEATURES.VIDEO ? {'video': {
           'api': [
             2,
             7
@@ -1630,7 +1630,7 @@ describe('dailymotionBidAdapterTests', () => {
           'skipmin': 10,
           'startdelay': 0,
           'w': 1280,
-        }
+        }} : {})
       }
       ],
       'regs': {
@@ -1813,13 +1813,13 @@ describe('dailymotionBidAdapterTests', () => {
       'imp': [{
         'id': 123456,
         'secure': 1,
-        'video': {
+        ...(FEATURES.VIDEO ? {'video': {
           'api': [
             2,
             7
           ],
           'startdelay': 0,
-        }
+        }} : {})
       }
       ],
       'regs': {
