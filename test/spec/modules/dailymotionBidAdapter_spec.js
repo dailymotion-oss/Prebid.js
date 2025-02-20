@@ -1600,39 +1600,37 @@ describe('dailymotionBidAdapterTests', () => {
         'bidfloorcur': 'USD',
         'id': 123456,
         'secure': 1,
-        ...(FEATURES.VIDEO ? {
-          'video': {
-            'api': [
-              2,
-              7
-            ],
-            'h': 720,
-            'maxduration': 30,
-            'mimes': [
-              'video/mp4'
-            ],
-            'minduration': 5,
-            'playbackmethod': [
-              3
-            ],
-            'plcmt': 1,
-            'protocols': [
-              1,
-              2,
-              3,
-              4,
-              5,
-              6,
-              7,
-              8
-            ],
-            'skip': 1,
-            'skipafter': 5,
-            'skipmin': 10,
-            'startdelay': 0,
-            'w': 1280,
-          }
-        } : {}),
+        ...(FEATURES.VIDEO ? {'video': {
+          'api': [
+            2,
+            7
+          ],
+          'h': 720,
+          'maxduration': 30,
+          'mimes': [
+            'video/mp4'
+          ],
+          'minduration': 5,
+          'playbackmethod': [
+            3
+          ],
+          'plcmt': 1,
+          'protocols': [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          'skip': 1,
+          'skipafter': 5,
+          'skipmin': 10,
+          'startdelay': 0,
+          'w': 1280,
+        }} : {})
       }
       ],
       'regs': {
@@ -1815,15 +1813,13 @@ describe('dailymotionBidAdapterTests', () => {
       'imp': [{
         'id': 123456,
         'secure': 1,
-        ...(FEATURES.VIDEO ? {
-          'video': {
-            'api': [
-              2,
-              7
-            ],
-            'startdelay': 0,
-          }
-        } : {})
+        ...(FEATURES.VIDEO ? {'video': {
+          'api': [
+            2,
+            7
+          ],
+          'startdelay': 0,
+        }} : {})
       }
       ],
       'regs': {
