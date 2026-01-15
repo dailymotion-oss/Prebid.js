@@ -1,4 +1,4 @@
-### Overview
+# Overview
 
 ```
 Module Name: Dailymotion Bid Adapter
@@ -6,12 +6,20 @@ Module Type: Bidder Adapter
 Maintainer: ad-leo-engineering@dailymotion.com
 ```
 
-### Description
+# Description
 
-Dailymotion prebid adapter.
+Dailymotion Prebid adapter.
 Supports video ad units in instream context.
 
-### Usage
+### Supported Features
+
+* Media types: Video
+* GDPR compliant
+* Price floors
+* User sync
+* Video context data (proprietary and ortb2)
+
+# Usage
 
 Make sure to have the following modules listed while building prebid : `priceFloors,dailymotionBidAdapter`
 
@@ -21,7 +29,7 @@ Make sure to have the following modules listed while building prebid : `priceFlo
 gulp build --modules=priceFloors,dailymotionBidAdapter
 ```
 
-### Configuration options
+## Configuration options
 
 Before calling this adapter, you need to at least set a video adUnit in an instream context and the API key in the bid parameters:
 
@@ -46,9 +54,10 @@ const adUnits = [
 
 `apiKey` is your publisher API key. For testing purpose, you can use "dailymotion-testing".
 
-#### User Sync
+### User Sync
 
-To enable user synchronization, add the following code. Dailymotion highly recommends using iframes and/or pixels for user syncing. This feature enhances DSP user match rates, resulting in higher bid rates and bid prices. Ensure that `pbjs.setConfig()` is called only once.
+Dailymotion highly recommends using iframes and/or pixels for user syncing. This feature enhances DSP user match rates, resulting in higher bid rates and bid prices.
+To enable user synchronization, add the following code:
 
 ```javascript
 pbjs.setConfig({
@@ -56,7 +65,7 @@ pbjs.setConfig({
     syncEnabled: true,
     filterSettings: {
       iframe: {
-        bidders: '*', // Or add dailymotion to your list included bidders
+        bidders: '*', // Or add dailymotion to your list of included bidders
         filter: 'include'
       },
       image: {
@@ -68,7 +77,11 @@ pbjs.setConfig({
 });
 ```
 
-#### Price floor
+Please ensure that `pbjs.setConfig()` is called only once for all settings (ex: user sync and price floors).
+
+### Price floor
+
+#### In AdUnit
 
 The price floor can be set at the ad unit level, for example : 
 
@@ -99,29 +112,15 @@ const adUnits = [{
   }
 }];
 
-// Do not forget to set an empty object for "floors" to active the price floor module
+// Do not forget to set an empty object for "floors" to enable the price floor module
 pbjs.setConfig({floors: {}});
 ```
 
-The following request will be sent to Dailymotion Prebid Service : 
+Please ensure that `pbjs.setConfig()` is called only once for all settings (ex: user sync and price floors).
 
-```javascript
-{
-  "pbv": "9.23.0-pre",
-  "ortb": {
-    "imp": [
-      {
-        ...
-        "bidfloor": 2.22,
-        "bidfloorcur": "USD"
-      }
-    ],
-  }
-  ...
-}
-```
+#### At package level
 
-Or the price floor can be set at the package level, for example : 
+The price floor can also be set at the package level, for example : 
 
 ```javascript
 const adUnits = [
@@ -158,25 +157,9 @@ pbjs.setConfig({
 })
 ```
 
-This will send the following bid floor in the request to Daiymotion Prebid Service : 
+#### Dynamic floors
 
-```javascript
-{
-  "pbv": "9.23.0-pre",
-  "ortb": {
-    "imp": [
-      {
-        ...
-        "bidfloor": 1,
-        "bidfloorcur": "USD"
-      }
-    ],
-    ...
-  }
-}
-```
-
-You can also [set dynamic floors](https://docs.prebid.org/dev-docs/modules/floors.html#bid-adapter-interface).
+You can also [use the dynamic floors module](https://docs.prebid.org/dev-docs/modules/floors.html#bid-adapter-interface).
 
 ### Test Parameters
 
@@ -203,10 +186,12 @@ const adUnits = [
 
 Please note that failing to set these will result in the adapter not bidding at all.
 
-### Sample video AdUnit
+### Video context data
 
 To allow better targeting, you should provide as much context about the video as possible.
 There are three ways of doing this depending on if you're using Dailymotion player or a third party one.
+
+#### Dailymotion Player
 
 If you are using the Dailymotion player, you must provide the video `xid` in the `video.id` field of your ad unit, example:
 
@@ -242,7 +227,29 @@ const adUnits = [
 This will automatically fetch the most up-to-date information about the video.
 Please note that if you provide any video metadata not listed above, they will be replaced by the ones fetched from the `video.id`.
 
-If you are using a third party video player, you should fill the following members:
+#### Ortb2
+
+If you already specify [First-Party data](https://docs.prebid.org/features/firstPartyData.html) through the `ortb2` object when calling [`pbjs.requestBids(requestObj)`](https://docs.prebid.org/dev-docs/publisher-api-reference/requestBids.html), we will collect the following values and fallback to bids.params.video values when applicable. See the mapping below.
+
+| From ortb2                                                                      | Metadata fields |
+|---------------------------------------------------------------------------------|-----------------|
+| `ortb2.site.content.cat` OR `ortb2.site.content.data` where `ext.segtax` is `4` | `iabcat1`       |
+| `ortb2.site.content.data` where `ext.segtax` is `5`, `6` or `7`                 | `iabcat2`       |
+| `ortb2.site.content.id`                                                         | `id`            |
+| `ortb2.site.content.language`                                                   | `lang`          |
+| `ortb2.site.content.livestream`                                                 | `livestream`    |
+| `ortb2.site.content.keywords`                                                   | `tags`          |
+| `ortb2.site.content.title`                                                      | `title`         |
+| `ortb2.site.content.url`                                                        | `url`           |
+| `ortb2.*`                                                                       | N/A             |
+
+To get detailed information on how we use ORTB fields, please read our [open-source documentation](https://github.com/dailymotion-oss/dmx-documentation/blob/main/ortb2.5.md)
+
+Note: ORTB is now the recommended way of transmitting first party data.
+
+#### Bid parameters
+
+If you can't use standard ORTB first-party data, our adapter supports the following bid parameters:
 
 ```javascript
 const adUnits = [
@@ -315,16 +322,14 @@ The following contextual information can also be added in bids.params.video.
 * `playerVolume` - Player volume between 0 (muted, 0%) and 10 (100%)
 * `videoViewsInSession` - Number of videos viewed within the current user session
 
-If you already specify [First-Party data](https://docs.prebid.org/features/firstPartyData.html) through the `ortb2` object when calling [`pbjs.requestBids(requestObj)`](https://docs.prebid.org/dev-docs/publisher-api-reference/requestBids.html), we will collect the following values and fallback to bids.params.video values when applicable. See the mapping below.
+# Additional information
 
-| From ortb2                                                                      | Metadata fields |
-|---------------------------------------------------------------------------------|-----------------|
-| `ortb2.site.content.cat` OR `ortb2.site.content.data` where `ext.segtax` is `4` | `iabcat1`       |
-| `ortb2.site.content.data` where `ext.segtax` is `5`, `6` or `7`                 | `iabcat2`       |
-| `ortb2.site.content.id`                                                         | `id`            |
-| `ortb2.site.content.language`                                                   | `lang`          |
-| `ortb2.site.content.livestream`                                                 | `livestream`    |
-| `ortb2.site.content.keywords`                                                   | `tags`          |
-| `ortb2.site.content.title`                                                      | `title`         |
-| `ortb2.site.content.url`                                                        | `url`           |
-| `ortb2.*`                                                                       | N/A             |
+## Bid validity
+
+Bids received from the Dailymotion adapter have a default TTL (Time To Live) of 600 seconds, starting from the time response is sent.
+There is no guarantee that the VAST will remain valid after this delay.
+
+## Server communication
+
+Dailymotion uses its own, server-side bid platform hosted at https://pb.dmxleo.com.
+Should you need to review the information sent to our systems, you can filter the client-side requests on this dedicated subdomain.
